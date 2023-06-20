@@ -1,6 +1,6 @@
 package com.raunakjodhawat.nearby.controllers
 
-import com.raunakjodhawat.nearby.models.User
+import com.raunakjodhawat.nearby.models.user.User
 import zio.ZIO
 
 class UserController {
