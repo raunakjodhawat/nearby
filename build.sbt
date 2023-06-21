@@ -6,6 +6,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "nearby"
   )
+val circeVersion = "0.14.5"
 libraryDependencies ++= Seq(
   "dev.zio" %% "zio" % "2.0.15",
   "dev.zio" %% "zio-http" % "3.0.0-RC2",
@@ -13,5 +14,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick-hikaricp" % "3.4.1",
   "com.github.tminglei" %% "slick-pg" % "0.21.1",
   "com.github.tminglei" %% "slick-pg_play-json" % "0.21.1",
-  "org.postgresql" % "postgresql" % "42.5.4"
+  "org.postgresql" % "postgresql" % "42.5.4",
+  "io.circe" %% "circe-core" % circeVersion,
+  "io.circe" %% "circe-generic" % circeVersion,
+  "io.circe" %% "circe-parser" % circeVersion
 )

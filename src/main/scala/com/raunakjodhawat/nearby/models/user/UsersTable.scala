@@ -6,6 +6,7 @@ import com.raunakjodhawat.nearby.models.user.UserStatus.UserStatus
 import slick.ast.TypedType
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
+import zio.json.{DeriveJsonDecoder, JsonDecoder}
 
 import java.util.Date
 
@@ -30,8 +31,9 @@ object UsersTable {
     e => e.toString,
     _ => new Date()
   )
+  implicit val decoder1: JsonDecoder[UserLocation] = DeriveJsonDecoder.gen[UserLocation]
 }
-class UsersTable(tag: Tag) extends Table[User](tag, Some("users"), "USERS") {
+class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
   import UsersTable._
   def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
   private def username = column[String]("USERNAME")

@@ -1,31 +1,41 @@
 package com.raunakjodhawat.nearby.repository.user
 
-import com.raunakjodhawat.nearby.models.user.{User, UserAlreadyExistsException, UsersTable}
-import slick.jdbc.PostgresProfile
-
-import scala.concurrent.{ExecutionContext, Future}
-import slick.jdbc.PostgresProfile.api._
-import slick.lifted.CanBeQueryCondition.BooleanCanBeQueryCondition
-import zio.ZIO
-
-import scala.reflect.ClassTag
-import scala.util.{Failure, Success, Try}
-
-object Connection {
-  val db = Database.forConfig("postgres")
+import com.raunakjodhawat.nearby.models.user.Avatar.Avatar
+import com.raunakjodhawat.nearby.models.user.UserLoginStatus.UserLoginStatus
+import com.raunakjodhawat.nearby.models.user.UserStatus.UserStatus
+import com.raunakjodhawat.nearby.models.user.{
+  User,
+  UserAlreadyExistsException,
+  UserDoesNotExistException,
+  UserLocation,
+  UsersTable
 }
+import slick.jdbc.PostgresProfile
+import slick.jdbc.PostgresProfile.api._
+import zio.ZIO
+import zio.json.{DeriveJsonDecoder, JsonDecoder}
 
-class UserRepository(db: PostgresProfile.backend.Database, users: TableQuery[UsersTable] = TableQuery[UsersTable])(
-  implicit val ex: ExecutionContext
+import java.util.Date
+import scala.util.{Failure, Success, Try}
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class UserRepository(db: PostgresProfile.backend.Database)(implicit
+  val ex: ExecutionContext
 ) {
+  val users: TableQuery[UsersTable] = TableQuery[UsersTable]
   def getAllUsers(): ZIO[Any, Throwable, Seq[UsersTable#TableElementType]] = ZIO.from { db.run(users.result) }
 
   def getUserById(id: Long): ZIO[Any, Throwable, Option[UsersTable#TableElementType]] = ZIO.from {
     db.run(users.filter(x => x.id === id).result.headOption)
   }
-  def createUser(user: User): ZIO[Any, UserAlreadyExistsException, User] =
-    Try(db.run(users += user)).map(_ => user) match {
-      case Success(_) => ZIO.succeed[User](user)
-      case Failure(_) => ZIO.fail(new UserAlreadyExistsException(user.id))
+  def createUser(user: User): Future[Int] = db.run(users += user)
+
+  def updateUser(user: User): ZIO[Any, UserDoesNotExistException, User] = {
+    val userCopy = user.copy(id = user.id, updated_at = Some(new Date()))
+    Try(db.run(users.filter(_.id === user.id).update(userCopy))).map(_ => user) match {
+      case Success(_) => ZIO.succeed[User](userCopy)
+      case Failure(_) => ZIO.fail(new UserDoesNotExistException(user.id))
     }
+  }
 }

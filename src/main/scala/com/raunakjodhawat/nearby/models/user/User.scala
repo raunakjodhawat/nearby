@@ -1,5 +1,7 @@
 package com.raunakjodhawat.nearby.models.user
 
+import zio.json.{DeriveJsonDecoder, DeriveJsonEncoder, JsonDecoder, JsonEncoder}
+
 import java.util.Date
 
 object UserStatus extends Enumeration {
@@ -42,3 +44,4 @@ case class User(
 )
 
 class UserAlreadyExistsException(id: Long) extends Exception(s"User with id $id already exists")
+class UserDoesNotExistException(id: Long) extends Exception(s"User with id $id does not exist")
