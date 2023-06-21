@@ -33,7 +33,7 @@ object UsersTable {
 }
 class UsersTable(tag: Tag) extends Table[User](tag, Some("users"), "USERS") {
   import UsersTable._
-  private def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
+  def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
   private def username = column[String]("USERNAME")
   private def password = column[String]("PASSWORD")
   private def salt = column[String]("SALT")
@@ -52,7 +52,7 @@ class UsersTable(tag: Tag) extends Table[User](tag, Some("users"), "USERS") {
   private def login_status = column[Option[UserLoginStatus]]("LOGIN_STATUS")
   private def avatar = column[Option[Avatar]]("AVATAR")
 
-  override def * =
+  def * =
     (id,
      username,
      password,
