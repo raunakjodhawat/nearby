@@ -40,6 +40,3 @@ case class User(
   login_status: Option[UserLoginStatus] = Some(UserLoginStatus.LOGGED_OUT),
   avatar: Option[Avatar] = Some(Avatar.AV_1)
 )
-
-class UserAlreadyExistsException(id: Long) extends Exception(s"User with id $id already exists")
-class UserDoesNotExistException(id: Option[Long]) extends Exception(s"User with id $id does not exist")

@@ -7,19 +7,15 @@ import scala.util.{Failure, Success}
 import zio.http._
 import zio._
 import slick.jdbc.PostgresProfile.api._
-import slick.jdbc.meta.MTable
 
 import scala.concurrent.ExecutionContext.Implicits.global
 object Application extends ZIOAppDefault {
   val db = Database.forConfig("postgres")
-  val users = TableQuery[UsersTable]
-  val setup = DBIO.seq(
-    users.schema.createIfNotExists
-  )
-  val ab = db.run(
-    setup
-  )
-  ab.onComplete {
+  db.run(
+    DBIO.seq(
+      TableQuery[UsersTable].schema.createIfNotExists
+    )
+  ).onComplete {
     case Success(value)     => println("Success")
     case Failure(exception) => println(exception.getMessage)
   }
