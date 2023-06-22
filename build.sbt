@@ -15,7 +15,17 @@ libraryDependencies ++= Seq(
   "com.github.tminglei" %% "slick-pg" % "0.21.1",
   "com.github.tminglei" %% "slick-pg_play-json" % "0.21.1",
   "org.postgresql" % "postgresql" % "42.5.4",
-  "io.circe" %% "circe-core" % circeVersion,
-  "io.circe" %% "circe-generic" % circeVersion,
-  "io.circe" %% "circe-parser" % circeVersion
+  "org.scalatest" %% "scalatest" % "3.2.15" % Test,
+  "org.scalamock" %% "scalamock" % "5.2.0" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.15" % Test,
+  "com.typesafe.slick" %% "slick-testkit" % "3.4.1" % "test",
+  "com.novocode" % "junit-interface" % "0.11" % "test",
+  "ch.qos.logback" % "logback-classic" % "1.4.7" % "test",
+  "postgresql" % "postgresql" % "9.1-901.jdbc4" % "test"
 )
+
+testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v", "-s", "-a")
+
+parallelExecution in Test := false
+
+logBuffered := false

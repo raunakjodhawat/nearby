@@ -5,7 +5,7 @@ import com.raunakjodhawat.nearby.models.user.UserLoginStatus.UserLoginStatus
 import com.raunakjodhawat.nearby.models.user.UserStatus.UserStatus
 import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserLoginStatus, UserStatus}
 import com.raunakjodhawat.nearby.repository.user.UserRepository
-import slick.jdbc.PostgresProfile
+import slick.jdbc.PostgresProfile.api._
 import zio._
 import zio.http._
 import zio.json._
@@ -57,7 +57,7 @@ object UserController {
   implicit val userDecoder: JsonDecoder[User] = DeriveJsonDecoder.gen[User]
   implicit val userEncoder: JsonEncoder[User] = DeriveJsonEncoder.gen[User]
 }
-class UserController(basePath: Path, db: PostgresProfile.backend.Database) {
+class UserController(basePath: Path, db: Database) {
   import UserController._
   private val api_path = basePath / "user"
   private val user_repository = new UserRepository(db)
