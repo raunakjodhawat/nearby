@@ -90,14 +90,15 @@ class UserController(basePath: Path, db: PostgresProfile.backend.Database) {
   private val api_path = basePath / "user"
   private val user_repository = new UserRepository(db)
   val api_route = Http.collectZIO[Request] {
+    case Method.GET -> api_path / id =>
+      getUserById(id.toLong)
     case Method.GET -> api_path =>
       getAllUsers()
     case req @ Method.POST -> api_path =>
       createUser(req.body)
+
     case req @ Method.POST -> api_path / id =>
       updateUser(req.body)
-    case Method.GET -> api_path / id =>
-      getUserById(id.toLong)
 
   }
 
@@ -126,19 +127,12 @@ class UserController(basePath: Path, db: PostgresProfile.backend.Database) {
       }
     ab
   }
-  def getUserById(id: Long) = {
-    println("get a user by id")
-    user_repository
+  private def getUserById(id: Long): ZIO[Any, Throwable, Response] = {
+    val mayBeUser = user_repository
       .getUserById(id)
-      .map { user =>
-        {
-          user match {
-            case Some(user) => Response.text(user.toString)
-            case None       => Response.text("User not found")
-          }
-        }
-      }
-      .orDie
+    val executeMaybeUser = mayBeUser.join
+    executeMaybeUser
+      .map(x => Response.text(x.toJson))
   }
 
   def updateUser(body: Body) = {

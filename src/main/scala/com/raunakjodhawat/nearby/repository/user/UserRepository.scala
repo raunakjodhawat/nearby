@@ -26,13 +26,10 @@ class UserRepository(db: PostgresProfile.backend.Database)(implicit
   val users: TableQuery[UsersTable] = TableQuery[UsersTable]
   def getAllUsers(): ZIO[Any, Throwable, Seq[UsersTable#TableElementType]] = ZIO.from { db.run(users.result) }
 
-  def getUserById(id: Long): ZIO[Any, Throwable, Option[UsersTable#TableElementType]] = ZIO.from {
-    db.run(users.filter(x => x.id === id).result.headOption)
+  def getUserById(id: Long): Fiber[Throwable, Option[UsersTable#TableElementType]] = {
+    Fiber.fromFuture(db.run(users.filter(x => x.id === id).result.headOption))
   }
-  def createUser(user: User): Fiber[Throwable, Int] = {
-    println("Creating user")
-    Fiber.fromFuture(db.run(users += user))
-  }
+  def createUser(user: User): Fiber[Throwable, Int] = Fiber.fromFuture(db.run(users += user))
 
   def updateUser(user: User): ZIO[Any, UserDoesNotExistException, User] = {
     val userCopy = user.copy(id = user.id, updated_at = Some(new Date()))
