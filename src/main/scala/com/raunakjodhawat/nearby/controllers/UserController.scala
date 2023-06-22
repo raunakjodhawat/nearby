@@ -25,7 +25,8 @@ object UserController {
   }
   implicit val dateEncoder: JsonEncoder[Date] = (a: Date, indent: Option[Int], out: Write) => out.write(df.format(a))
 
-  implicit val userLocationEncoder: JsonEncoder[UserLocation] = (a: UserLocation, indent: Option[Int], out: Write) => out.write(s"""{"latitude":${a.lat},"longitude":${a.long}}""")
+  implicit val userLocationEncoder: JsonEncoder[UserLocation] = (a: UserLocation, indent: Option[Int], out: Write) =>
+    out.write(s"""{"latitude":${a.lat},"longitude":${a.long}}""")
   implicit val userLocationDecoder: JsonDecoder[UserLocation] = (trace: List[JsonError], in: RetractReader) => {
     val json = in.toString
     val latitude = json.substring(json.indexOf(":") + 1, json.indexOf(",")).toDouble
@@ -33,19 +34,22 @@ object UserController {
     UserLocation(latitude, longitude)
   }
 
-  implicit val loginStatusEncoder: JsonEncoder[UserLoginStatus] = (a: UserLoginStatus, indent: Option[Int], out: Write) => out.write(s""""${a.toString}"""")
+  implicit val loginStatusEncoder: JsonEncoder[UserLoginStatus] =
+    (a: UserLoginStatus, indent: Option[Int], out: Write) => out.write(s""""${a.toString}"""")
   implicit val loginStatusDecoder: JsonDecoder[UserLoginStatus] = (trace: List[JsonError], in: RetractReader) => {
     val json = in.toString
     UserLoginStatus.withName(json.substring(1, json.length - 1))
   }
 
-  implicit val avatarEncoder: JsonEncoder[Avatar] = (a: Avatar, indent: Option[Int], out: Write) => out.write(s""""${a.toString}"""")
+  implicit val avatarEncoder: JsonEncoder[Avatar] = (a: Avatar, indent: Option[Int], out: Write) =>
+    out.write(s""""${a.toString}"""")
 
   implicit val avatarDecoder: JsonDecoder[Avatar] = (trace: List[JsonError], in: RetractReader) => {
     val json = in.toString
     Avatar.withName(json.substring(1, json.length - 1))
   }
-  implicit val userStatusEncoder: JsonEncoder[UserStatus] = (a: UserStatus, indent: Option[Int], out: Write) => out.write(s""""${a.toString}"""")
+  implicit val userStatusEncoder: JsonEncoder[UserStatus] = (a: UserStatus, indent: Option[Int], out: Write) =>
+    out.write(s""""${a.toString}"""")
   implicit val userStatusDecoder: JsonDecoder[UserStatus] = (trace: List[JsonError], in: RetractReader) => {
     val json = in.toString
     UserStatus.withName(json.substring(1, json.length - 1))
@@ -79,7 +83,10 @@ class UserController(basePath: Path, db: PostgresProfile.backend.Database) {
     user_repository
       .getUserById(id)
       .join
-      .map(x => Response.json(x.toJson))
+      .map {
+        case Some(user) => Response.json(user.toJson)
+        case None       => Response.status(Status.NotFound)
+      }
   }
 
   private def createUser(body: Body): ZIO[Any, Throwable, Response] = {
@@ -104,7 +111,10 @@ class UserController(basePath: Path, db: PostgresProfile.backend.Database) {
           user_repository
             .updateUser(user, id)
             .join
-            .map(user => Response.json(user.toJson))
+            .map {
+              case Some(user) => Response.json(user.toJson)
+              case None       => Response.status(Status.NotFound)
+            }
       }
   }
 }

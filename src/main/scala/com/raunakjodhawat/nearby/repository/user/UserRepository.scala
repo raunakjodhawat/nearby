@@ -19,8 +19,8 @@ class UserRepository(db: PostgresProfile.backend.Database)(implicit
   }
   def createUser(user: User): Fiber[Throwable, Int] = Fiber.fromFuture(db.run(users += user))
 
-  def updateUser(user: User, id: Long): Fiber[Throwable, User] = {
+  def updateUser(user: User, id: Long): Fiber[Throwable, Option[User]] = {
     val userCopy = user.copy(id = Some(id), updated_at = Some(new Date()))
-    Fiber.fromFuture(db.run(users.filter(_.id === id).update(userCopy))).map(_ => userCopy)
+    Fiber.fromFuture(db.run(users.filter(_.id === id).update(userCopy))).map(i => if (i == 1) Some(userCopy) else None)
   }
 }

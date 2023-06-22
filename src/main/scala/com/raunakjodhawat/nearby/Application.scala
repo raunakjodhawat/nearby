@@ -16,7 +16,7 @@ object Application extends ZIOAppDefault {
       TableQuery[UsersTable].schema.createIfNotExists
     )
   ).onComplete {
-    case Success(value)     => println("Success")
+    case Success(_)         => println("Database Initialization complete")
     case Failure(exception) => println(exception.getMessage)
   }
   private val base_path: Path = Root / "api" / "v1"
