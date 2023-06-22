@@ -8,7 +8,7 @@ import zio.Fiber
 import java.util.Date
 import scala.concurrent.ExecutionContext
 
-class UserRepository(db: PostgresProfile.backend.Database)(implicit
+class UserRepository(db: Database)(implicit
   val ex: ExecutionContext
 ) {
   val users: TableQuery[UsersTable] = TableQuery[UsersTable]
