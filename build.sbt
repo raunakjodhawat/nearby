@@ -29,3 +29,12 @@ testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v", "-s", "-a")
 parallelExecution in Test := false
 
 logBuffered := false
+
+coverageHighlighting := true
+coverageFailOnMinimum := false
+coverageMinimumStmtTotal := 70
+coverageMinimumBranchTotal := 70
+coverageMinimumStmtPerPackage := 70
+coverageMinimumBranchPerPackage := 70
+coverageMinimumStmtPerFile := 70
+coverageMinimumBranchPerFile := 70

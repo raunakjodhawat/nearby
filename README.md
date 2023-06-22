@@ -12,6 +12,11 @@ It enables you to connect with people near you, get there services, see relevant
 5. install insomnia or postman and test the [endpoints](./Insomnia.json)
 6. Enjoy!
 
+## Running test
+1. Run `sbt test` in the root directory of the project
+2. Run `sbt coverage +test +coverageReport` to generate coverage report
+
+
 ## Endpoints
 | Method | Endpoint       | Description |
 | -- |----------------| --- |
