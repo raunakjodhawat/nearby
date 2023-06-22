@@ -18,8 +18,10 @@ import zio.http._
 import zio.json._
 import zio.json.internal.{RetractReader, Write}
 import zio._
+
 import java.text.SimpleDateFormat
 import java.util.Date
+import scala.Long
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -86,56 +88,48 @@ object UserController {
 }
 class UserController(basePath: Path, db: PostgresProfile.backend.Database) {
   import UserController._
-  println("reached here")
   private val api_path = basePath / "user"
   private val user_repository = new UserRepository(db)
   val api_route = Http.collectZIO[Request] {
-    case Method.GET -> api_path / id =>
-      getUserById(id.toLong)
+    case Method.GET -> api_path / long(id) =>
+      getUserById(id)
     case Method.GET -> api_path =>
       getAllUsers()
     case req @ Method.POST -> api_path =>
       createUser(req.body)
-
     case req @ Method.POST -> api_path / id =>
       updateUser(req.body)
 
   }
 
-  def getAllUsers(): ZIO[Any, Throwable, Response] = {
-    user_repository.getAllUsers().map(x => Response.text(x.toString))
+  private def getAllUsers(): ZIO[Any, Throwable, Response] = {
+    user_repository
+      .getAllUsers()
+      .join
+      .map(x => Response.json(x.toJson))
+  }
+
+  private def getUserById(id: Long): ZIO[Any, Throwable, Response] = {
+    user_repository
+      .getUserById(id)
+      .join
+      .map(x => Response.json(x.toJson))
   }
 
   def createUser(body: Body): ZIO[Any, Throwable, Response] = {
-    val payload: Task[String] = body.asString
-    val mayBeUser: ZIO[Any, Throwable, Either[String, User]] = payload
+    body.asString
       .map(_.fromJson[User])
-    println(s"inside create user, body is: $body")
-    val ab: ZIO[Any, Throwable, Response] = mayBeUser
       .flatMap {
         case Left(e) => ZIO.fail(new Exception(e))
-        case Right(user) => {
-          println("making request")
-          val fiber = user_repository.createUser(user)
-          val b = fiber.join
-          b.map(x => Response.text(x.toString))
-            .mapError(e => {
-              println(s"this is the exception ${e.getMessage}")
-              new Exception(e)
-            })
-        }
+        case Right(user) =>
+          user_repository
+            .createUser(user)
+            .join
+            .map(x => if (x == 1) Response.status(Status.Created) else Response.status(Status.BadRequest))
       }
-    ab
-  }
-  private def getUserById(id: Long): ZIO[Any, Throwable, Response] = {
-    val mayBeUser = user_repository
-      .getUserById(id)
-    val executeMaybeUser = mayBeUser.join
-    executeMaybeUser
-      .map(x => Response.text(x.toJson))
   }
 
-  def updateUser(body: Body) = {
+  def updateUser(body: Body): ZIO[Any, Throwable, Response] = {
     body.asString
       .map(x => {
         x.fromJson[User].map { user =>

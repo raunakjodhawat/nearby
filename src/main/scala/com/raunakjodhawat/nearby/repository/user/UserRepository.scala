@@ -24,7 +24,7 @@ class UserRepository(db: PostgresProfile.backend.Database)(implicit
   val ex: ExecutionContext
 ) {
   val users: TableQuery[UsersTable] = TableQuery[UsersTable]
-  def getAllUsers(): ZIO[Any, Throwable, Seq[UsersTable#TableElementType]] = ZIO.from { db.run(users.result) }
+  def getAllUsers(): Fiber[Throwable, Seq[UsersTable#TableElementType]] = Fiber.fromFuture(db.run(users.result))
 
   def getUserById(id: Long): Fiber[Throwable, Option[UsersTable#TableElementType]] = {
     Fiber.fromFuture(db.run(users.filter(x => x.id === id).result.headOption))
