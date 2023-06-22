@@ -109,25 +109,22 @@ class UserController(basePath: Path, db: PostgresProfile.backend.Database) {
     val payload: Task[String] = body.asString
     val mayBeUser: ZIO[Any, Throwable, Either[String, User]] = payload
       .map(_.fromJson[User])
-    val createResponse: ZIO[Any, Throwable, Response] = mayBeUser
-      .map(x => {
-        val mayBeResponse: Either[String, Task[Int]] = x
-          .map { user =>
-            Runtime.default.unsafe(ZIO.fromFuture(implicit ec => user_repository.createUser(user)))
-            ZIO.fromFuture(implicit ec => user_repository.createUser(user))
-          }
-        mayBeResponse match {
-          case Left(e) => Response.text(e)
-          case Right(value: Task[Int]) => {
-            val runtime = Runtime.default
-
-            Unsafe.unsafe { implicit unsafe =>
-              runtime.unsafeRunToFuture(ZIO.fromFuture(ex => Future(1))).run(value).getOrThrowFiberFailure()
-            }
-          }
+    println(s"inside create user, body is: $body")
+    val ab: ZIO[Any, Throwable, Response] = mayBeUser
+      .flatMap {
+        case Left(e) => ZIO.fail(new Exception(e))
+        case Right(user) => {
+          println("making request")
+          val fiber = user_repository.createUser(user)
+          val b = fiber.join
+          b.map(x => Response.text(x.toString))
+            .mapError(e => {
+              println(s"this is the exception ${e.getMessage}")
+              new Exception(e)
+            })
         }
-      })
-    createResponse
+      }
+    ab
   }
   def getUserById(id: Long) = {
     println("get a user by id")

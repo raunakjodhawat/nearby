@@ -1,7 +1,5 @@
 package com.raunakjodhawat.nearby.models.user
 
-import zio.json.{DeriveJsonDecoder, DeriveJsonEncoder, JsonDecoder, JsonEncoder}
-
 import java.util.Date
 
 object UserStatus extends Enumeration {
@@ -24,7 +22,7 @@ import UserStatus._
 
 case class UserLocation(lat: Double, long: Double)
 case class User(
-  id: Long,
+  id: Option[Long],
   username: String,
   password: String,
   salt: String,
@@ -36,7 +34,7 @@ case class User(
   country: Option[String],
   pincode: Option[String],
   location: Option[UserLocation],
-  created_at: Option[Date],
+  created_at: Option[Date] = Some(new Date()),
   updated_at: Option[Date],
   status: Option[UserStatus] = Some(UserStatus.ACTIVE),
   login_status: Option[UserLoginStatus] = Some(UserLoginStatus.LOGGED_OUT),
@@ -44,4 +42,4 @@ case class User(
 )
 
 class UserAlreadyExistsException(id: Long) extends Exception(s"User with id $id already exists")
-class UserDoesNotExistException(id: Long) extends Exception(s"User with id $id does not exist")
+class UserDoesNotExistException(id: Option[Long]) extends Exception(s"User with id $id does not exist")

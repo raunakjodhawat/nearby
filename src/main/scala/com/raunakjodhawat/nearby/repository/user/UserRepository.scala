@@ -12,7 +12,7 @@ import com.raunakjodhawat.nearby.models.user.{
 }
 import slick.jdbc.PostgresProfile
 import slick.jdbc.PostgresProfile.api._
-import zio.ZIO
+import zio.{Fiber, ZIO}
 import zio.json.{DeriveJsonDecoder, JsonDecoder}
 
 import java.util.Date
@@ -29,7 +29,10 @@ class UserRepository(db: PostgresProfile.backend.Database)(implicit
   def getUserById(id: Long): ZIO[Any, Throwable, Option[UsersTable#TableElementType]] = ZIO.from {
     db.run(users.filter(x => x.id === id).result.headOption)
   }
-  def createUser(user: User): Future[Int] = db.run(users += user)
+  def createUser(user: User): Fiber[Throwable, Int] = {
+    println("Creating user")
+    Fiber.fromFuture(db.run(users += user))
+  }
 
   def updateUser(user: User): ZIO[Any, UserDoesNotExistException, User] = {
     val userCopy = user.copy(id = user.id, updated_at = Some(new Date()))

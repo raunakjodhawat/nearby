@@ -35,7 +35,7 @@ object UsersTable {
 }
 class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
   import UsersTable._
-  def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
+  def id = column[Option[Long]]("ID", O.PrimaryKey, O.AutoInc)
   private def username = column[String]("USERNAME")
   private def password = column[String]("PASSWORD")
   private def salt = column[String]("SALT")
@@ -49,7 +49,7 @@ class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
   private def pincode = column[Option[String]]("PINCODE")
   private def location = column[Option[UserLocation]]("LOCATION")
   private def created_at = column[Option[Date]]("CREATED_AT")
-  private def updated_at = column[Option[Date]]("CREATED_AT")
+  private def updated_at = column[Option[Date]]("UPDATED_AT")
   private def status = column[Option[UserStatus]]("STATUS")
   private def login_status = column[Option[UserLoginStatus]]("LOGIN_STATUS")
   private def avatar = column[Option[Avatar]]("AVATAR")
