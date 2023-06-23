@@ -13,9 +13,10 @@ It enables you to connect with people near you, get there services, see relevant
 6. Enjoy!
 
 ## Running test
-1. Run `sbt test` in the root directory of the project
-2. Run `sbt coverage +test +coverageReport` to generate coverage report
-
+1. create a database named `nearby_test` with a user named `nearby_test` with password `nearby_test`
+2. Run `sbt test` in the root directory of the project
+3. Run `sbt coverage +test +coverageReport` to generate coverage report
+4. Run `sbt coverageAggregate` to generate aggregated coverage report
 
 ## Endpoints
 | Method | Endpoint       | Description |
