@@ -35,6 +35,15 @@ object UserRepositorySpec {
     )
     val userRepository = new UserRepository(db)
     val runtime = Runtime.default
+    db.run(
+      DBIO.seq(
+        TableQuery[UsersTable].schema.dropIfExists,
+        TableQuery[UsersTable].schema.createIfNotExists
+      )
+    ).onComplete {
+      case Success(_)         => println("Test Database Initialization complete")
+      case Failure(exception) => println(exception.getMessage)
+    }
   }
 }
 class UserRepositorySpec extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach {
@@ -44,7 +53,8 @@ class UserRepositorySpec extends AnyWordSpec with BeforeAndAfter with BeforeAndA
     super.beforeEach()
     db.run(
       DBIO.seq(
-        TableQuery[UsersTable].delete
+        TableQuery[UsersTable].schema.dropIfExists,
+        TableQuery[UsersTable].schema.createIfNotExists
       )
     ).onComplete {
       case Success(_)         => println("Test Database Initialization complete")

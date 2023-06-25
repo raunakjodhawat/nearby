@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
   "org.scalamock" %% "scalamock" % "5.2.0" % Test
 )
 
-coverageEnabled := true
+//coverageEnabled := true
 // Coverage settings
 coverageHighlighting := true
 coverageFailOnMinimum := false
