@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: nearby_test
+      POSTGRES_USER: nearby_test
+      POSTGRES_DB: nearby_test
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d/create_tables.sql
+  api:
+    container_name: nearby_api
+    build: .
+    image: nearby_api
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+volumes:
+  db:
+    driver: local
