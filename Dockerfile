@@ -1,8 +1,9 @@
 FROM sbtscala/scala-sbt:graalvm-ce-22.3.0-b2-java17_1.8.2_2.13.10
 
 WORKDIR /app
-COPY project .
+RUN sh echo "hello world"
+COPY . .
 COPY build.sbt .
-COPY target/scala-2.13/classes .
 EXPOSE 8000
+EXPOSE 5432
 CMD sbt run
