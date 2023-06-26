@@ -1,19 +1,19 @@
 package com.raunakjodhawat.nearby.repository.user
 
 import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserLoginStatus, UserStatus, UsersTable}
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import org.scalatest.wordspec.AnyWordSpec
 import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import slick.dbio.DBIO
 
-import scala.util.{Failure, Success}
 import zio._
+
+import scala.concurrent.Future
 object UserRepositorySpec {
   val db = Database.forConfig("postgres-test")
   trait Environment {
-
+    println("trait is initialized")
     val testUser: User = User(
       Some(1L),
       "username",
@@ -35,90 +35,88 @@ object UserRepositorySpec {
     )
     val userRepository = new UserRepository(db)
     val runtime = Runtime.default
-    val usersTable = TableQuery[UsersTable]
+  }
+
+  def clearDB: Future[Unit] = {
+    val users = TableQuery[UsersTable]
     db.run(
       DBIO.seq(
-        usersTable.schema.createIfNotExists
+        users.schema.dropIfExists,
+        users.schema.createIfNotExists
       )
-    ).onComplete {
-      case Success(_)         => println("Test Database Initialization complete")
-      case Failure(exception) => println(exception.getMessage)
-    }
+    )
   }
 }
-class UserRepositorySpec extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach {
+class UserRepositorySpec extends AnyWordSpec {
   import UserRepositorySpec._
 
-//  override def beforeEach(): Unit = {
-//    super.beforeEach()
-//    db.run(
-//      DBIO.seq(
-//        TableQuery[UsersTable].schema.dropIfExists,
-//        TableQuery[UsersTable].schema.createIfNotExists
-//      )
-//    ).onComplete {
-//      case Success(_)         => println("Test Database Initialization complete")
-//      case Failure(exception) => println(exception.getMessage)
-//    }
-//  }
-  "UserRepository, when empty" should {
-    "getUserById, should return empty User" in new Environment {
-      val fiber = userRepository
-        .getUserById(1L)
-        .join
-        .map {
-          case Some(_) => fail("User should not be present")
-          case None    => assert(true)
-        }
+  "getUserById, when UserRepository is empty" should {
+    "return empty User" in new Environment {
+      val fibers = for {
+        _ <- ZIO.fromFuture(_ => clearDB)
+        mayBeUser <- userRepository.getUserById(1L).join
+      } yield mayBeUser
+
+      val fiber = fibers.map {
+        case None => assert(true)
+        case _    => fail("User should not be present")
+      }
       Unsafe.unsafe { implicit rts =>
         {
           runtime.unsafe.run(fiber).getOrThrowFiberFailure()
         }
       }
     }
-//    "getAllUser, should return empty Seq[User]" in new Environment {
-//      val fiber = userRepository
-//        .getAllUsers()
-//        .join
-//        .map {
-//          case x: Seq[User] if x.isEmpty => assert(true)
-//          case _                         => fail("User list should be empty")
-//        }
-//      Unsafe.unsafe { implicit rts =>
-//        {
-//          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
-//        }
-//      }
-//    }
   }
 
-  "UserRepository" should {
-//    "be able to create a new user" in new Environment {
-//      val fiber = userRepository
-//        .createUser(testUser)
-//        .join
-//        .map {
-//          case x: Int if x == 1 => assert(true)
-//          case _                => fail("Unable to create the user")
-//        }
-//      Unsafe.unsafe { implicit rts =>
-//        {
-//          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
-//        }
-//      }
-//    }
+  "getAllUser, when UserRepository is empty" should {
+    "return empty Seq[User]" in new Environment {
+      val fibers = for {
+        _ <- ZIO.fromFuture(_ => clearDB)
+        mayBeUser <- userRepository
+          .getAllUsers()
+          .join
+      } yield mayBeUser
 
-//    "be able to query for a user" in new Environment {
-//      val fiber =
-//        userRepository.createUser(testUser).join.flatMap(_ => userRepository.getUserById(testUser.id.get).join).map {
-//          case Some(user) => assert(user == testUser)
-//          case None       => fail("User should be present")
-//        }
-//      Unsafe.unsafe { implicit rts =>
-//        {
-//          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
-//        }
-//      }
-//    }
+      val fiber = fibers.map {
+        case x: Seq[User] if x.isEmpty => assert(true)
+        case _                         => fail("User list should be empty")
+      }
+      Unsafe.unsafe { implicit rts =>
+        {
+          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
+        }
+      }
+    }
   }
+
+//  "UserRepository" should {
+////    "be able to create a new user" in new Environment {
+////      val fiber = userRepository
+////        .createUser(testUser)
+////        .join
+////        .map {
+////          case x: Int if x == 1 => assert(true)
+////          case _                => fail("Unable to create the user")
+////        }
+////      Unsafe.unsafe { implicit rts =>
+////        {
+////          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
+////        }
+////      }
+////    }
+//
+////    "be able to query for a user" in new Environment {
+////      val fiber =
+////        userRepository.createUser(testUser).join.flatMap(_ => userRepository.getUserById(testUser.id.get).join).map {
+////          case Some(user) => assert(user == testUser)
+////          case None       => fail("User should be present")
+////        }
+////      Unsafe.unsafe { implicit rts =>
+////        {
+////          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
+////        }
+////      }
+////    }
+//  }
 }

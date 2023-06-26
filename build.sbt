@@ -29,3 +29,4 @@ coverageMinimumStmtPerPackage := 70
 coverageMinimumBranchPerPackage := 70
 coverageMinimumStmtPerFile := 70
 coverageMinimumBranchPerFile := 70
+Test / parallelExecution := false
