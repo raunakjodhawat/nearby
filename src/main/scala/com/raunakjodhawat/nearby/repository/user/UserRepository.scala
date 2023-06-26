@@ -1,14 +1,13 @@
 package com.raunakjodhawat.nearby.repository.user
 
 import com.raunakjodhawat.nearby.models.user.{User, UsersTable}
-import slick.jdbc.PostgresProfile
 import slick.jdbc.PostgresProfile.api._
 import zio.Fiber
 
 import java.util.Date
 import scala.concurrent.ExecutionContext
 
-class UserRepository(db: PostgresProfile.backend.Database)(implicit
+class UserRepository(db: Database)(implicit
   val ex: ExecutionContext
 ) {
   val users: TableQuery[UsersTable] = TableQuery[UsersTable]

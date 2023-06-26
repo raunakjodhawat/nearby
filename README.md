@@ -12,6 +12,11 @@ It enables you to connect with people near you, get there services, see relevant
 5. install insomnia or postman and test the [endpoints](./Insomnia.json)
 6. Enjoy!
 
+## Running test
+`sbt test` is containerized. Hence, it requires docker to be installed on your machine.
+1. chmod +x ./scripts/runTests.sh
+2. ./scripts/runTests.sh
+
 ## Endpoints
 | Method | Endpoint       | Description |
 | -- |----------------| --- |
