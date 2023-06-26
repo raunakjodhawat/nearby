@@ -38,7 +38,6 @@ object UserRepositorySpec {
     val usersTable = TableQuery[UsersTable]
     db.run(
       DBIO.seq(
-        usersTable.schema.dropIfExists,
         usersTable.schema.createIfNotExists
       )
     ).onComplete {
