@@ -5,4 +5,4 @@ RUN sh echo "hello world"
 COPY . .
 COPY build.sbt .
 EXPOSE 8080
-CMD sbt test
+CMD sbt coverage +test +coverageReport

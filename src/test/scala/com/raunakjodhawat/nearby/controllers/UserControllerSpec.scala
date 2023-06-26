@@ -7,7 +7,6 @@ import slick.jdbc.PostgresProfile.api._
 object UserControllerSpec {
   trait Environment {
     val basePath: Path = Root / "test"
-    println("all done")
   }
 }
 class UserControllerSpec extends AnyFlatSpec {

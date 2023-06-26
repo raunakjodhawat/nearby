@@ -13,10 +13,9 @@ It enables you to connect with people near you, get there services, see relevant
 6. Enjoy!
 
 ## Running test
-1. create a database named `nearby_test` with a user named `nearby_test` with password `nearby_test`
-2. Run `sbt test` in the root directory of the project
-3. Run `sbt coverage +test +coverageReport` to generate coverage report
-4. Run `sbt coverageAggregate` to generate aggregated coverage report
+`sbt test` is containerized. Hence, it requires docker to be installed on your machine.
+1. chmod +x ./scripts/runTests.sh
+2. ./scripts/runTests.sh
 
 ## Endpoints
 | Method | Endpoint       | Description |
