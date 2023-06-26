@@ -22,7 +22,9 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
 volumes:
   db:
-  app:
+
 
