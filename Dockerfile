@@ -4,6 +4,5 @@ WORKDIR /app
 RUN sh echo "hello world"
 COPY . .
 COPY build.sbt .
-EXPOSE 8000
-EXPOSE 5432
-CMD sbt run
+EXPOSE 8080
+CMD sbt test

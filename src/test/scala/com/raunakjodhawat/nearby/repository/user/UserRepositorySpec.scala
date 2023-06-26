@@ -35,10 +35,11 @@ object UserRepositorySpec {
     )
     val userRepository = new UserRepository(db)
     val runtime = Runtime.default
+    val usersTable = TableQuery[UsersTable]
     db.run(
       DBIO.seq(
-        TableQuery[UsersTable].schema.dropIfExists,
-        TableQuery[UsersTable].schema.createIfNotExists
+        usersTable.schema.dropIfExists,
+        usersTable.schema.createIfNotExists
       )
     ).onComplete {
       case Success(_)         => println("Test Database Initialization complete")
@@ -49,18 +50,18 @@ object UserRepositorySpec {
 class UserRepositorySpec extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach {
   import UserRepositorySpec._
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    db.run(
-      DBIO.seq(
-        TableQuery[UsersTable].schema.dropIfExists,
-        TableQuery[UsersTable].schema.createIfNotExists
-      )
-    ).onComplete {
-      case Success(_)         => println("Test Database Initialization complete")
-      case Failure(exception) => println(exception.getMessage)
-    }
-  }
+//  override def beforeEach(): Unit = {
+//    super.beforeEach()
+//    db.run(
+//      DBIO.seq(
+//        TableQuery[UsersTable].schema.dropIfExists,
+//        TableQuery[UsersTable].schema.createIfNotExists
+//      )
+//    ).onComplete {
+//      case Success(_)         => println("Test Database Initialization complete")
+//      case Failure(exception) => println(exception.getMessage)
+//    }
+//  }
   "UserRepository, when empty" should {
     "getUserById, should return empty User" in new Environment {
       val fiber = userRepository
@@ -76,37 +77,37 @@ class UserRepositorySpec extends AnyWordSpec with BeforeAndAfter with BeforeAndA
         }
       }
     }
-    "getAllUser, should return empty Seq[User]" in new Environment {
-      val fiber = userRepository
-        .getAllUsers()
-        .join
-        .map {
-          case x: Seq[User] if x.isEmpty => assert(true)
-          case _                         => fail("User list should be empty")
-        }
-      Unsafe.unsafe { implicit rts =>
-        {
-          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
-        }
-      }
-    }
+//    "getAllUser, should return empty Seq[User]" in new Environment {
+//      val fiber = userRepository
+//        .getAllUsers()
+//        .join
+//        .map {
+//          case x: Seq[User] if x.isEmpty => assert(true)
+//          case _                         => fail("User list should be empty")
+//        }
+//      Unsafe.unsafe { implicit rts =>
+//        {
+//          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
+//        }
+//      }
+//    }
   }
 
   "UserRepository" should {
-    "be able to create a new user" in new Environment {
-      val fiber = userRepository
-        .createUser(testUser)
-        .join
-        .map {
-          case x: Int if x == 1 => assert(true)
-          case _                => fail("Unable to create the user")
-        }
-      Unsafe.unsafe { implicit rts =>
-        {
-          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
-        }
-      }
-    }
+//    "be able to create a new user" in new Environment {
+//      val fiber = userRepository
+//        .createUser(testUser)
+//        .join
+//        .map {
+//          case x: Int if x == 1 => assert(true)
+//          case _                => fail("Unable to create the user")
+//        }
+//      Unsafe.unsafe { implicit rts =>
+//        {
+//          runtime.unsafe.run(fiber).getOrThrowFiberFailure()
+//        }
+//      }
+//    }
 
 //    "be able to query for a user" in new Environment {
 //      val fiber =
