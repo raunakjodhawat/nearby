@@ -28,4 +28,4 @@ jobs:
         distribution: 'temurin'
         cache: 'sbt'
     - name: Run tests
-      run: docker-compose up --exit-code-from api --abort-on-container-exit --add-host=host.docker.internal:host-gateway
+      run: docker-compose up --exit-code-from api --abort-on-container-exit
