@@ -2,7 +2,6 @@ package com.raunakjodhawat.nearby.controllers
 
 import org.scalatest.flatspec.AnyFlatSpec
 import zio.http._
-import slick.jdbc.PostgresProfile.api._
 
 object UserControllerSpec {
   trait Environment {

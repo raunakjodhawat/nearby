@@ -10,16 +10,17 @@ import slick.dbio.DBIO
 import zio._
 
 import scala.concurrent.Future
+import scala.util.Properties
 object UserRepositorySpec {
-  val db = Database.forConfig("postgres-test")
+  val db = Database.forConfig(Properties.envOrElse("DBPATH", "postgres-test-local"))
   trait Environment {
     val testUser: User = User(
       Some(1L),
       "username",
       "user123",
-      "salt",
+      Some("secret"),
       "email",
-      "phone",
+      Some("phone"),
       Some("address"),
       Some("city"),
       Some("state"),

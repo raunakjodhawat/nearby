@@ -89,6 +89,7 @@ class UserController(basePath: Path, db: Database) {
       }
   }
 
+  // Used for signup requests
   private def createUser(body: Body): ZIO[Any, Throwable, Response] = {
     body.asString
       .map(_.fromJson[User])
@@ -98,7 +99,10 @@ class UserController(basePath: Path, db: Database) {
           user_repository
             .createUser(user)
             .join
-            .map(x => if (x == 1) Response.status(Status.Created) else Response.status(Status.BadRequest))
+            .map(x =>
+              if (x == 1) Response.status(Status.Created)
+              else Response.status(Status.BadRequest)
+            )
       }
   }
 

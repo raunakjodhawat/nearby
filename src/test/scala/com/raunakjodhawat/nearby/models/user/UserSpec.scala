@@ -38,9 +38,9 @@ class UserSpec extends AnyFlatSpec {
       id = Some(1),
       username = "username",
       password = "password",
-      salt = "salt",
+      secret = Some("secret"),
       email = "email",
-      phone = "phone",
+      phone = Some("phone"),
       address = Some("address"),
       city = Some("city"),
       state = Some("state"),
@@ -56,9 +56,9 @@ class UserSpec extends AnyFlatSpec {
     assert(user.id.get == 1)
     assert(user.username == "username")
     assert(user.password == "password")
-    assert(user.salt == "salt")
+    assert(user.secret.get == "secret")
     assert(user.email == "email")
-    assert(user.phone == "phone")
+    assert(user.phone.get == "phone")
     assert(user.address.get == "address")
     assert(user.city.get == "city")
     assert(user.state.get == "state")

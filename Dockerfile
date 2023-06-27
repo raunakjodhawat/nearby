@@ -5,4 +5,6 @@ RUN sh echo "hello world"
 COPY . .
 COPY build.sbt .
 EXPOSE 8080
+ARG DBPATH=postgres-test-docker
+ENV DBPATH=postgres-test-docker
 CMD sbt coverage +test +coverageReport

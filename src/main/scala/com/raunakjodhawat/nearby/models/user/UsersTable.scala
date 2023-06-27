@@ -36,17 +36,17 @@ object UsersTable {
 class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
   import UsersTable._
   def id = column[Option[Long]]("ID", O.PrimaryKey, O.AutoInc)
-  private def username = column[String]("USERNAME")
-  private def password = column[String]("PASSWORD")
-  private def salt = column[String]("SALT")
-  private def email = column[String]("EMAIL")
-  private def phone = column[String]("PHONE")
+  def username = column[String]("USERNAME", O.Unique, O.Length(32))
+  private def password = column[String]("PASSWORD", O.Length(32))
+  private def secret = column[Option[String]]("SECRET", O.Length(36))
+  def email = column[String]("EMAIL", O.Unique, O.Length(64))
+  private def phone = column[Option[String]]("PHONE", O.Length(16))
 
-  private def address = column[Option[String]]("ADDRESS")
-  private def city = column[Option[String]]("CITY")
-  private def state = column[Option[String]]("STATE")
-  private def country = column[Option[String]]("COUNTRY")
-  private def pincode = column[Option[String]]("PINCODE")
+  private def address = column[Option[String]]("ADDRESS", O.Length(32))
+  private def city = column[Option[String]]("CITY", O.Length(32))
+  private def state = column[Option[String]]("STATE", O.Length(32))
+  private def country = column[Option[String]]("COUNTRY", O.Length(32))
+  private def pincode = column[Option[String]]("PINCODE", O.Length(16))
   private def location = column[Option[UserLocation]]("LOCATION")
   private def created_at = column[Option[Date]]("CREATED_AT")
   private def updated_at = column[Option[Date]]("UPDATED_AT")
@@ -58,7 +58,7 @@ class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
     (id,
      username,
      password,
-     salt,
+     secret,
      email,
      phone,
      address,
