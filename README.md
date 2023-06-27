@@ -13,9 +13,29 @@ It enables you to connect with people near you, get there services, see relevant
 6. Enjoy!
 
 ## Running test
+### With Docker
 `sbt test` is containerized. Hence, it requires docker to be installed on your machine.
 1. chmod +x ./scripts/runTests.sh
 2. ./scripts/runTests.sh
+
+
+### On Local
+1. Run postgres on your machine
+2. Create nearby_test database with user nearby_test and password nearby_test
+3. Run `sbt test` in the root directory of the project
+4. It's always a good idea to have maximum code coverage. To check code coverage run `sbt coverage +test +coverageReport` in the root directory of the project.
+5. Coverage report can be found at `target/scala-2.13/scoverage-report/index.html`
+
+## Tech Stack
+1. [ZIO](https://zio.dev) - A type-safe, composable library for async and concurrent programming in Scala
+2. [Scala](https://www.scala-lang.org) - A general purpose programming language
+3. [Postgres](https://www.postgresql.org) - A powerful, open source object-relational database system
+4. [Slick](https://scala-slick.org) - A modern database query and access library for Scala
+5. [ScalaTest](https://www.scalatest.org) - A testing tool for Scala and Java developers
+6. [Docker](https://www.docker.com) - A set of platform as a service products that use OS-level virtualization to deliver software in packages called containers
+7. [Insomnia](https://insomnia.rest) - A powerful REST API Client
+8. [Cats](https://typelevel.org/cats/) - Lightweight, modular, and extensible library for functional programming
+9. [Cats Effect](https://typelevel.org/cats-effect/) - The most popular purely functional effect library for Scala
 
 ## Endpoints
 | Method | Endpoint       | Description |
