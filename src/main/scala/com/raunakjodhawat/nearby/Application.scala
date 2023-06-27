@@ -13,6 +13,7 @@ object Application extends ZIOAppDefault {
   val db = Database.forConfig("postgres")
   db.run(
     DBIO.seq(
+      TableQuery[UsersTable].schema.dropIfExists,
       TableQuery[UsersTable].schema.createIfNotExists
     )
   ).onComplete {

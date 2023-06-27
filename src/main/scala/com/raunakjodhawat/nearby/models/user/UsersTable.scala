@@ -36,11 +36,11 @@ object UsersTable {
 class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
   import UsersTable._
   def id = column[Option[Long]]("ID", O.PrimaryKey, O.AutoInc)
-  private def username = column[String]("USERNAME")
+  def username = column[String]("USERNAME")
   private def password = column[String]("PASSWORD")
-  private def salt = column[String]("SALT")
-  private def email = column[String]("EMAIL")
-  private def phone = column[String]("PHONE")
+  private def secret = column[Option[String]]("SECRET")
+  def email = column[String]("EMAIL")
+  private def phone = column[Option[String]]("PHONE")
 
   private def address = column[Option[String]]("ADDRESS")
   private def city = column[Option[String]]("CITY")
@@ -58,7 +58,7 @@ class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
     (id,
      username,
      password,
-     salt,
+     secret,
      email,
      phone,
      address,

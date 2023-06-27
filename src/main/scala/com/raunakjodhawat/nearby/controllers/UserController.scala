@@ -89,6 +89,7 @@ class UserController(basePath: Path, db: Database) {
       }
   }
 
+  // Used for signup requests
   private def createUser(body: Body): ZIO[Any, Throwable, Response] = {
     body.asString
       .map(_.fromJson[User])

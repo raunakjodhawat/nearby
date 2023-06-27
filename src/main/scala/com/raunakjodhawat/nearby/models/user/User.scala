@@ -8,7 +8,7 @@ object UserStatus extends Enumeration {
 }
 object UserLoginStatus extends Enumeration {
   type UserLoginStatus = Value
-  val LOGGED_IN, LOGGED_OUT = Value
+  val LOGGED_IN, LOGGED_OUT, PENDING_ACTIVATION = Value
 }
 
 object Avatar extends Enumeration {
@@ -25,9 +25,9 @@ case class User(
   id: Option[Long],
   username: String,
   password: String,
-  salt: String,
+  secret: Option[String],
   email: String,
-  phone: String,
+  phone: Option[String],
   address: Option[String],
   city: Option[String],
   state: Option[String],
@@ -36,7 +36,7 @@ case class User(
   location: Option[UserLocation],
   created_at: Option[Date] = Some(new Date()),
   updated_at: Option[Date],
-  status: Option[UserStatus] = Some(UserStatus.ACTIVE),
-  login_status: Option[UserLoginStatus] = Some(UserLoginStatus.LOGGED_OUT),
+  status: Option[UserStatus] = Some(UserStatus.INACTIVE),
+  login_status: Option[UserLoginStatus] = Some(UserLoginStatus.PENDING_ACTIVATION),
   avatar: Option[Avatar] = Some(Avatar.AV_1)
 )

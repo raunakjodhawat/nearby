@@ -14,6 +14,8 @@ libraryDependencies ++= Seq(
   "com.github.tminglei" %% "slick-pg" % "0.21.1",
   "com.github.tminglei" %% "slick-pg_play-json" % "0.21.1",
   "org.postgresql" % "postgresql" % "42.5.4",
+  // jwt token
+  "com.github.jwt-scala" %% "jwt-zio-json" % "9.4.0",
   // Scala test
   "org.scalatest" %% "scalatest" % "3.2.15" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test

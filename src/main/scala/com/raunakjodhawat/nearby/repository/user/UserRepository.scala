@@ -1,11 +1,12 @@
 package com.raunakjodhawat.nearby.repository.user
 
 import com.raunakjodhawat.nearby.models.user.{User, UsersTable}
+import com.raunakjodhawat.nearby.utils.Utils.secretKey
 import slick.jdbc.PostgresProfile.api._
-import zio.Fiber
+import zio._
 
 import java.util.Date
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class UserRepository(db: Database)(implicit
   val ex: ExecutionContext
@@ -16,7 +17,21 @@ class UserRepository(db: Database)(implicit
   def getUserById(id: Long): Fiber[Throwable, Option[UsersTable#TableElementType]] = {
     Fiber.fromFuture(db.run(users.filter(x => x.id === id).result.headOption))
   }
-  def createUser(user: User): Fiber[Throwable, Int] = Fiber.fromFuture(db.run(users += user))
+  def createUser(user: User): Fiber[Throwable, Int] = Fiber.fromFuture(
+    db
+      .run(users.filter(x => x.email === user.email || x.username === user.username).result.headOption)
+      .flatMap {
+        case Some(_) => throw new Exception("User already exists")
+        case None => {
+          val userCopy =
+            user.copy(secret = Some(secretKey()), created_at = Some(new Date()), updated_at = Some(new Date()))
+          db.run(users += userCopy).flatMap {
+            case 1 => Future(1)
+            case _ => throw new Exception("Error creating user")
+          }
+        }
+      }
+  )
 
   def updateUser(user: User, id: Long): Fiber[Throwable, Option[User]] = {
     val userCopy = user.copy(id = Some(id), updated_at = Some(new Date()))
