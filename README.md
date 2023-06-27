@@ -25,6 +25,11 @@ It enables you to connect with people near you, get there services, see relevant
 | POST | api/v1/user    | Create a user |
 | POST | api/v1/user/:id     | Update a user |
 
+
+## Functionality
+1. Sign up: Users can create a new account with a username and password. Username and Email address both needs to be unique. Upon successful user creation, an email is sent with a verification link. User needs to verify the email address before logging in.
+
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 

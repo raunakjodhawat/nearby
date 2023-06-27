@@ -99,7 +99,10 @@ class UserController(basePath: Path, db: Database) {
           user_repository
             .createUser(user)
             .join
-            .map(x => if (x == 1) Response.status(Status.Created) else Response.status(Status.BadRequest))
+            .map(x =>
+              if (x == 1) Response.status(Status.Created)
+              else Response.status(Status.BadRequest)
+            )
       }
   }
 

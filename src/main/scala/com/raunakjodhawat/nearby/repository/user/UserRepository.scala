@@ -18,18 +18,10 @@ class UserRepository(db: Database)(implicit
     Fiber.fromFuture(db.run(users.filter(x => x.id === id).result.headOption))
   }
   def createUser(user: User): Fiber[Throwable, Int] = Fiber.fromFuture(
-    db
-      .run(users.filter(x => x.email === user.email || x.username === user.username).result.headOption)
+    db.run(users += user.copy(secret = Some(secretKey()), created_at = Some(new Date()), updated_at = Some(new Date())))
       .flatMap {
-        case Some(_) => throw new Exception("User already exists")
-        case None => {
-          val userCopy =
-            user.copy(secret = Some(secretKey()), created_at = Some(new Date()), updated_at = Some(new Date()))
-          db.run(users += userCopy).flatMap {
-            case 1 => Future(1)
-            case _ => throw new Exception("Error creating user")
-          }
-        }
+        case 1 => Future(1)
+        case _ => throw new Exception("Error creating user")
       }
   )
 
