@@ -18,11 +18,12 @@ class UserRepository(db: Database)(implicit
     Fiber.fromFuture(db.run(users.filter(x => x.id === id).result.headOption))
   }
   def createUser(user: User): Fiber[Throwable, Int] = Fiber.fromFuture(
-    db.run(users += user.copy(secret = Some(secretKey()), created_at = Some(new Date()), updated_at = Some(new Date())))
-      .flatMap {
-        case 1 => Future(1)
-        case _ => throw new Exception("Error creating user")
-      }
+    db.run(
+      users += user.copy(secret = Some(secretKey()), created_at = Some(new Date()), updated_at = Some(new Date()))
+    ).flatMap {
+      case 1 => Future(1)
+      case _ => throw new Exception("Error creating user")
+    }
   )
 
   def updateUser(user: User, id: Long): Fiber[Throwable, Option[User]] = {
