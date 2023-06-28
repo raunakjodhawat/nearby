@@ -38,7 +38,7 @@ class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
   def id = column[Option[Long]]("ID", O.PrimaryKey, O.AutoInc)
   def username = column[String]("USERNAME", O.Unique, O.Length(32))
   private def password = column[String]("PASSWORD", O.Length(32))
-  private def secret = column[Option[String]]("SECRET", O.Length(36))
+  def secret = column[Option[String]]("SECRET", O.Length(36))
   def email = column[String]("EMAIL", O.Unique, O.Length(64))
   private def phone = column[Option[String]]("PHONE", O.Length(16))
 

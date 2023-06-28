@@ -5,6 +5,7 @@ import com.raunakjodhawat.nearby.models.user.UserLoginStatus.UserLoginStatus
 import com.raunakjodhawat.nearby.models.user.UserStatus.UserStatus
 import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserLoginStatus, UserStatus}
 import com.raunakjodhawat.nearby.repository.user.UserRepository
+import com.raunakjodhawat.nearby.utils.Utils.sendEmail
 import slick.jdbc.PostgresProfile.api._
 import zio._
 import zio.http._
@@ -13,7 +14,6 @@ import zio.json.internal.{RetractReader, Write}
 
 import java.text.SimpleDateFormat
 import java.util.Date
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object UserController {
@@ -66,6 +66,8 @@ class UserController(basePath: Path, db: Database) {
       getUserById(id)
     case req @ Method.POST -> api_path / long(id) =>
       updateUser(req.body, id)
+    case Method.GET -> api_path / "verify" / long(id) / secret_key =>
+      verifyUser(id, secret_key)
     case Method.GET -> api_path =>
       getAllUsers()
     case req @ Method.POST -> api_path =>
@@ -99,10 +101,20 @@ class UserController(basePath: Path, db: Database) {
           user_repository
             .createUser(user)
             .join
-            .map(x =>
-              if (x == 1) Response.status(Status.Created)
-              else Response.status(Status.BadRequest)
-            )
+            .map { user =>
+              sendEmail(user.secret.get, user.username, user.email)
+              Response.status(Status.Created)
+            }
+      }
+  }
+
+  private def verifyUser(id: Long, secret_key: String): ZIO[Any, Throwable, Response] = {
+    user_repository
+      .verifyUser(id, secret_key)
+      .join
+      .map {
+        case Some(user) => Response.json(user.toJson)
+        case None       => Response.status(Status.NotFound)
       }
   }
 
