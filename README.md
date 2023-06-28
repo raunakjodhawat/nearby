@@ -8,16 +8,9 @@ It enables you to connect with people near you, get there services, see relevant
 1. Clone the repository
 2. Install [Postgres](https://www.postgresql.org) and create a database named `nearby` with a user named `nearby` with password `nearby`
 3. Run postgres on your machine
-4. Create `env.development` file in the root directory of the project and add the following environment variables
-```text
-env=development
-mailerHost=smtp.mailgun.org (if you are using mailgun)
-mailerUsername= (username of your mailgun account)
-mailerPassword= (password of your mailgun account)
-```
-5. Run `source env.development` followed with `sbt run` in the root directory of the project
-6. install insomnia or postman and test the [endpoints](./Insomnia.json)
-7. Enjoy!
+4. Run `sbt run` in the root directory of the project
+5. install insomnia or postman and test the [endpoints](./Insomnia.json)
+6. Enjoy!
 
 ## Running test
 ### With Docker
