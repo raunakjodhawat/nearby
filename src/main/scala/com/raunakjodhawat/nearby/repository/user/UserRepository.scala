@@ -6,7 +6,7 @@ import slick.jdbc.PostgresProfile.api._
 import zio._
 
 import java.util.Date
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class UserRepository(db: Database)(implicit
   val ex: ExecutionContext

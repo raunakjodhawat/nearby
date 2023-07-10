@@ -11,12 +11,12 @@ import zio.json._
 
 import scala.concurrent.ExecutionContext
 
-class UserController(basePath: Path, userRepository: UserRepository)(implicit
+class UserController(base_path: Path, userRepository: UserRepository)(implicit
   ec: ExecutionContext
 ) {
-  private val api_path = basePath / "user"
+  private val api_path = base_path / "user"
   val api_route = Http.collectZIO[Request] {
-    case Method.GET -> api_path / long(id) =>
+    case Method.GET -> Root / long(id) =>
       getUserById(id)
     case req @ Method.POST -> api_path / long(id) =>
       updateUser(req.body, id)
@@ -27,6 +27,7 @@ class UserController(basePath: Path, userRepository: UserRepository)(implicit
   }
 
   private def getAllUsers(): ZIO[Any, Throwable, Response] = {
+    println("get all users")
     userRepository
       .getAllUsers()
       .join

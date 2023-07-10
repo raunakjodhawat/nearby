@@ -9,15 +9,21 @@ import zio.json._
 
 import scala.concurrent.ExecutionContext
 
-class VerificationController(basePath: Path, userRepository: UserRepository)(implicit
+class VerificationController(base_path: Path, userRepository: UserRepository)(implicit
   ec: ExecutionContext
 ) {
-  private val api_path = basePath / "verify"
-  val verify_api_route = Http.collectZIO[Request] { case Method.GET -> api_path / long(id) / secret_key =>
-    verifyUser(id, secret_key)
+  private val api_path = base_path / "verify"
+  val verify_api_route = Http.collectZIO[Request] {
+    case Method.GET -> api_path / long(id) =>
+      verifyUser(1, "secret_key")
+    case _ => {
+      println("reachint here")
+      ZIO.succeed(Response.text("Invalid request"))
+    }
   }
 
   private def verifyUser(id: Long, secret_key: String): ZIO[Any, Throwable, Response] = {
+    println("verify user")
     userRepository
       .verifyUser(id, secret_key)
       .join
