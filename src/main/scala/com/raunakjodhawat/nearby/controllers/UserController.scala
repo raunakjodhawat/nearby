@@ -24,7 +24,7 @@ class UserController(base_path: Path, userRepository: UserRepository) {
       createUser(req.body)
   }
 
-  private def getAllUsers: ZIO[Database, Throwable, Response] = for {
+  def getAllUsers: ZIO[Database, Throwable, Response] = for {
     resultZIO <- for {
       fib <- userRepository.getAllUsers.fork
       res <- fib.await
@@ -35,7 +35,7 @@ class UserController(base_path: Path, userRepository: UserRepository) {
     result <- resultZIO
   } yield Response.json(result.toJson)
 
-  private def getUserById(id: Long): ZIO[Database, Throwable, Response] = for {
+  def getUserById(id: Long): ZIO[Database, Throwable, Response] = for {
     resultZIO <- for {
       fib <- userRepository.getUserById(id).fork
       res <- fib.await
@@ -47,7 +47,7 @@ class UserController(base_path: Path, userRepository: UserRepository) {
   } yield Response.json(result.toJson)
 
   // Used for signup requests
-  private def createUser(body: Body): ZIO[Database, Throwable, Response] = {
+  def createUser(body: Body): ZIO[Database, Throwable, Response] = {
     body.asString
       .map(_.fromJson[User])
       .flatMap {
@@ -69,7 +69,7 @@ class UserController(base_path: Path, userRepository: UserRepository) {
       }
   }
 
-  private def updateUser(body: Body, id: Long): ZIO[Database, Throwable, Response] = {
+  def updateUser(body: Body, id: Long): ZIO[Database, Throwable, Response] = {
     body.asString
       .map(_.fromJson[User])
       .flatMap {

@@ -10,16 +10,23 @@ import zio.http._
 object Controller {
   def apply(base_path: Path, db: ZIO[Any, Throwable, Database]): HttpApp[Database, Response] = {
     val userRepository = new UserRepository(db)
-    val base_route: Http[Database, Throwable, Request, Response] = Http.collect[Request] {
-      case _ -> base_path / "ping" =>
-        Response.text("pong")
-    }
-    val user_route: Http[Database, Throwable, Request, Response] =
-      new UserController(base_path, userRepository).api_route
-    val verification_route: Http[Database, Throwable, Request, Response] =
-      new VerificationController(base_path, userRepository).verify_api_route
-    val route = base_route ++ user_route ++ verification_route
-
-    route.mapError(err => Response.fromHttpError(HttpError.BadRequest.apply(err.getMessage)))
+    val vc = new VerificationController(base_path, userRepository)
+    val uc = new UserController(base_path, userRepository)
+    Http
+      .collectZIO[Request] {
+        case Method.GET -> base_path / "verify" / long(id) / secret_key =>
+          vc.verifyUser(id, secret_key)
+        case Method.GET -> base_path / "user" / long(id) =>
+          uc.getUserById(id)
+        case req @ Method.POST -> base_path / "user" / long(id) =>
+          uc.updateUser(req.body, id)
+        case Method.GET -> base_path / "user" =>
+          uc.getAllUsers
+        case req @ Method.POST -> base_path / "user" =>
+          uc.createUser(req.body)
+        case Method.GET -> base_path / "ping" =>
+          ZIO.succeed(Response.text("pong"))
+      }
+      .mapError(err => Response.fromHttpError(HttpError.BadRequest.apply(err.getMessage)))
   }
 }
