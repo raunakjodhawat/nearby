@@ -1,12 +1,12 @@
 package com.raunakjodhawat.nearby.controllers
 import com.raunakjodhawat.nearby.repository.user.UserRepository
 import slick.jdbc.PostgresProfile.api._
+import zio._
 import zio.http._
-import zio.http.endpoint.EndpointMiddleware.None.Err
 
 import scala.concurrent.ExecutionContext.Implicits.global
 object Controller {
-  def apply(base_path: Path, db: Database): HttpApp[Database, Response] = {
+  def apply(base_path: Path, db: ZIO[Any, Throwable, Database]): HttpApp[Database, Response] = {
     val userRepository = new UserRepository(db)
     val base_route: Http[Database, Throwable, Request, Response] = Http.collect[Request] {
       case _ -> base_path / "ping" =>

@@ -5,11 +5,11 @@ import com.raunakjodhawat.nearby.models.user.UsersTable
 import zio.http._
 import zio._
 import slick.jdbc.PostgresProfile.api._
-import zio.http.endpoint.EndpointMiddleware.None.Err
 
 object Application extends ZIOAppDefault {
+  val dbZIO = ZIO.attempt(Database.forConfig("postgres"))
   private def initializeDB: ZIO[Any, Throwable, Database] = (for {
-    db <- ZIO.attempt(Database.forConfig("postgres"))
+    db <- dbZIO
     updateFork <- ZIO.fromFuture { ex =>
       {
         db.run(
@@ -29,11 +29,7 @@ object Application extends ZIOAppDefault {
       )
   }).flatMap(x => x)
 
-  val db = Database.forConfig("postgres")
-
   private val base_path: Path = Root / "api" / "v1"
-
-  private val app: HttpApp[Database, Response] =
-    Controller(base_path, db)
+  private val app: HttpApp[Database, Response] = Controller(base_path, dbZIO)
   override def run = initializeDB *> Server.serve(app).provide(Server.default)
 }
