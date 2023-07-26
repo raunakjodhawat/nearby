@@ -3,12 +3,14 @@ package com.raunakjodhawat.nearby.models.user
 import com.raunakjodhawat.nearby.models.user.Avatar.Avatar
 import com.raunakjodhawat.nearby.models.user.UserLoginStatus.UserLoginStatus
 import com.raunakjodhawat.nearby.models.user.UserStatus.UserStatus
+
 import slick.ast.TypedType
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
-import zio.json.{DeriveJsonDecoder, JsonDecoder}
 
 import java.util.Date
+
+import zio.json.{DeriveJsonDecoder, JsonDecoder}
 
 object UsersTable {
   implicit val userStatusMapping: TypedType[UserStatus] = MappedColumnType.base[UserStatus, String](

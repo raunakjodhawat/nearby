@@ -11,11 +11,7 @@ import zio._
 import zio.http._
 import zio.json._
 
-import scala.concurrent.ExecutionContext
-
-class UserController(base_path: Path, userRepository: UserRepository)(implicit
-  ec: ExecutionContext
-) {
+class UserController(base_path: Path, userRepository: UserRepository) {
   private val api_path = base_path / "user"
   val api_route = Http.collectZIO[Request] {
     case Method.GET -> Root / long(id) =>

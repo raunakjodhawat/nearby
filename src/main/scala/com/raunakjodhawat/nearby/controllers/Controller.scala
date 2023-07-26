@@ -1,10 +1,12 @@
 package com.raunakjodhawat.nearby.controllers
+
 import com.raunakjodhawat.nearby.repository.user.UserRepository
+
 import slick.jdbc.PostgresProfile.api._
+
 import zio._
 import zio.http._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 object Controller {
   def apply(base_path: Path, db: ZIO[Any, Throwable, Database]): HttpApp[Database, Response] = {
     val userRepository = new UserRepository(db)

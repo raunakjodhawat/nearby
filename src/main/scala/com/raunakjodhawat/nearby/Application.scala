@@ -31,5 +31,5 @@ object Application extends ZIOAppDefault {
 
   private val base_path: Path = Root / "api" / "v1"
   private val app: HttpApp[Database, Response] = Controller(base_path, dbZIO)
-  override def run = initializeDB *> Server.serve(app).provide(Server.default)
+  override def run = initializeDB *> Server.serve(app).provide(Server.default, ZLayer.fromZIO(dbZIO))
 }

@@ -2,10 +2,12 @@ package com.raunakjodhawat.nearby.repository.user
 
 import com.raunakjodhawat.nearby.models.user.{User, UserLoginStatus, UserStatus, UsersTable}
 import com.raunakjodhawat.nearby.utils.Utils.secretKey
+
 import slick.jdbc.PostgresProfile.api._
-import zio._
 
 import java.util.Date
+
+import zio._
 
 object UserRepository {
   val users: TableQuery[UsersTable] = TableQuery[UsersTable]
