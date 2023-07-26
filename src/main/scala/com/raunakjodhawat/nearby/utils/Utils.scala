@@ -30,11 +30,11 @@ object Utils {
   def isValidUsername(username: String): Boolean = username.length > 5 && username.length < 32
   def isValidPassword(password: String): Boolean = password.length > 5 && password.length < 32
 
-  def createUrl(secret: String): String = env match {
-    case "development" => s"http://localhost:8080/api/v1/verify/$secret"
+  def createUrl(id: Long, secret: String): String = env match {
+    case "development" => s"http://localhost:8080/api/v1/verify/$id/$secret"
   }
-  def sendEmail(secret: String, username: String, receiverEmail: String): ZIO[Any, Throwable, Unit] = {
-    val url = createUrl(secret)
+  def sendEmail(secret: String, id: Long, username: String, receiverEmail: String): ZIO[Any, Throwable, Unit] = {
+    val url = createUrl(id, secret)
     val content =
       s"""
          |Hello $username,

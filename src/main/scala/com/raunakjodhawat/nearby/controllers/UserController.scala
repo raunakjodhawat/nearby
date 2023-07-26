@@ -52,7 +52,7 @@ class UserController(userRepository: UserRepository) {
               case Exit.Failure(cause) => ZIO.failCause(cause)
             }
             user <- resultZIO
-            _ <- sendEmail(user.secret.get, user.username, user.email)
+            _ <- sendEmail(user.secret.get, user.id.getOrElse(0L), user.username, user.email).fork
           } yield Response.json(user.toJson)
       }
   }
