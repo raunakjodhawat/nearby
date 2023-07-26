@@ -64,10 +64,8 @@ class UserController(base_path: Path, userRepository: UserRepository) {
               case Exit.Failure(cause) => ZIO.failCause(cause)
             }
             user <- resultZIO
-          } yield {
-            sendEmail(user.secret.get, user.username, user.email)
-            Response.json(user.toJson)
-          }
+            _ <- sendEmail(user.secret.get, user.username, user.email)
+          } yield Response.json(user.toJson)
       }
   }
 

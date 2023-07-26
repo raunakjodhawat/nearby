@@ -4,8 +4,11 @@ import courier._
 
 import scala.util.{Failure, Properties, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
+
 import java.util.UUID.randomUUID
 import javax.mail.internet.InternetAddress
+
+import zio._
 object Utils {
   val mailerHost = Properties.envOrElse("mailerHost", "")
   val mailerUsername = Properties.envOrElse("mailerUsername", "")
@@ -30,7 +33,7 @@ object Utils {
   def createUrl(secret: String): String = env match {
     case "development" => s"http://localhost:8080/api/v1/verify/$secret"
   }
-  def sendEmail(secret: String, username: String, receiverEmail: String) = {
+  def sendEmail(secret: String, username: String, receiverEmail: String): ZIO[Any, Throwable, Unit] = {
     val url = createUrl(secret)
     val content =
       s"""
@@ -43,19 +46,30 @@ object Utils {
          |Nearby Team
          |""".stripMargin
 
-    val mailer = Mailer(mailerHost, 587)
-      .auth(true)
-      .as(mailerUsername, mailerPassword)
-      .startTls(true)()
-    mailer(
-      Envelope
-        .from(new InternetAddress(mailerUsername))
-        .to(new InternetAddress(receiverEmail))
-        .subject("Nearby, verify your email")
-        .content(Text(content))
-    )(global).onComplete {
-      case Success(_) => println("message delivered")
-      case Failure(e) => println(s"delivery failed, ${e.getMessage}")
-    }(global)
+    val mailerZIO: ZIO[Any, Throwable, Mailer] = ZIO.attempt(
+      Mailer(mailerHost, 587)
+        .auth(true)
+        .as(mailerUsername, mailerPassword)
+        .startTls(true)()
+    )
+
+    for {
+      mailer <- mailerZIO
+      mailSenderFiber <- ZIO.fromFuture { ex =>
+        {
+          mailer(
+            Envelope
+              .from(new InternetAddress(mailerUsername))
+              .to(new InternetAddress(receiverEmail))
+              .subject("Nearby, verify your email")
+              .content(Text(content))
+          )
+        }
+      }.fork
+      mailSenderResult <- mailSenderFiber.await
+    } yield mailSenderResult match {
+      case Exit.Success(_) => println("message delivered")
+      case Exit.Failure(_) => println(s"delivery failed")
+    }
   }
 }
