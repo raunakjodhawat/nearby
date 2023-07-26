@@ -2,7 +2,7 @@ package com.raunakjodhawat.nearby.utils
 
 import courier._
 
-import scala.util.{Failure, Properties, Success}
+import scala.util.Properties
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import java.util.UUID.randomUUID
