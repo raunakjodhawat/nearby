@@ -14,7 +14,7 @@ import zio.json._
 class UserController(base_path: Path, userRepository: UserRepository) {
   private val api_path = base_path / "user"
   val api_route = Http.collectZIO[Request] {
-    case Method.GET -> Root / long(id) =>
+    case Method.GET -> api_path / long(id) =>
       getUserById(id)
     case req @ Method.POST -> api_path / long(id) =>
       updateUser(req.body, id)

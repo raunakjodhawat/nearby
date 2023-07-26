@@ -19,10 +19,13 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     getAllUsersFutureZIO <- ZIO.fromFuture { ex => db.run(users.result) }
   } yield getAllUsersFutureZIO
 
-  def getUserById(id: Long): ZIO[Database, Throwable, Option[UsersTable#TableElementType]] = for {
+  def getUserById(id: Long): ZIO[Database, Throwable, UsersTable#TableElementType] = for {
     db <- dbZIO
     getUserByIdFutureZIO <- ZIO.fromFuture { ex => db.run(users.filter(x => x.id === id).result.headOption) }
-  } yield getUserByIdFutureZIO
+  } yield getUserByIdFutureZIO match {
+    case Some(user) => user
+    case None       => throw new Exception("User not found")
+  }
 
   def createUser(user: User): ZIO[Database, Throwable, UsersTable#TableElementType] = for {
     db <- dbZIO
