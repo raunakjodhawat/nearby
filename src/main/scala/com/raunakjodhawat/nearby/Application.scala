@@ -21,10 +21,7 @@ object Application extends ZIOAppDefault {
     case Failure(exception) => println(exception.getMessage)
   }
   private val base_path: Path = Root / "api" / "v1"
-  private val base_route = Http.collect[Request] { case _ -> base_path / "ping" =>
-    Response.text("pong")
-  }
-  private val app =
-    base_route ++ Controller(base_path, db).mapError(e => Response.fromHttpError(HttpError.BadRequest(e.getMessage)))
+
+  private val app = Controller(base_path, db).mapError(e => Response.fromHttpError(HttpError.BadRequest(e.getMessage)))
   override def run = Server.serve(app).provide(Server.default)
 }
