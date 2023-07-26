@@ -6,12 +6,7 @@ import slick.jdbc.PostgresProfile.api._
 import zio._
 import zio.http._
 
-class VerificationController(base_path: Path, userRepository: UserRepository) {
-  private val api_path = base_path / "verify"
-  val verify_api_route = Http.collectZIO[Request] { case Method.GET -> api_path / long(id) / secret_key =>
-    verifyUser(id, secret_key)
-  }
-
+class VerificationController(userRepository: UserRepository) {
   def verifyUser(id: Long, secret_key: String): ZIO[Database, Throwable, Response] = {
     println("verify user")
     for {

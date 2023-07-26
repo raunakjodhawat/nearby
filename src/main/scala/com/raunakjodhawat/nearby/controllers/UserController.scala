@@ -11,19 +11,7 @@ import zio._
 import zio.http._
 import zio.json._
 
-class UserController(base_path: Path, userRepository: UserRepository) {
-  private val api_path = base_path / "user"
-  val api_route = Http.collectZIO[Request] {
-    case Method.GET -> api_path / long(id) =>
-      getUserById(id)
-    case req @ Method.POST -> api_path / long(id) =>
-      updateUser(req.body, id)
-    case Method.GET -> api_path =>
-      getAllUsers
-    case req @ Method.POST -> api_path =>
-      createUser(req.body)
-  }
-
+class UserController(userRepository: UserRepository) {
   def getAllUsers: ZIO[Database, Throwable, Response] = for {
     resultZIO <- for {
       fib <- userRepository.getAllUsers.fork

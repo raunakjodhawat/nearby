@@ -10,8 +10,8 @@ import zio.http._
 object Controller {
   def apply(base_path: Path, db: ZIO[Any, Throwable, Database]): HttpApp[Database, Response] = {
     val userRepository = new UserRepository(db)
-    val vc = new VerificationController(base_path, userRepository)
-    val uc = new UserController(base_path, userRepository)
+    val vc = new VerificationController(userRepository)
+    val uc = new UserController(userRepository)
     Http
       .collectZIO[Request] {
         case Method.GET -> base_path / "verify" / long(id) / secret_key =>
