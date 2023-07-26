@@ -6,14 +6,11 @@ import slick.jdbc.PostgresProfile.api._
 import zio._
 
 import java.util.Date
-import scala.concurrent.ExecutionContext
 
 object UserRepository {
   val users: TableQuery[UsersTable] = TableQuery[UsersTable]
 }
-class UserRepository(dbZIO: ZIO[Any, Throwable, Database])(implicit
-  val ex: ExecutionContext
-) {
+class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
   import UserRepository._
   def getAllUsers: ZIO[Database, Throwable, Seq[UsersTable#TableElementType]] = for {
     db <- dbZIO
@@ -37,12 +34,12 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database])(implicit
       else ZIO.fail(new Exception("Error creating user"))
   } yield updationResults
 
-  def verifyUser(id: Long, secret: String): ZIO[Database, Throwable, Option[User]] = for {
+  def verifyUser(id: Long, secret: String): ZIO[Database, Throwable, String] = for {
     db <- dbZIO
     getUserFromFromDB <- ZIO.fromFuture { ex =>
       db.run(users.filter(x => x.id === id && x.secret === secret).result.headOption)
     }
-    copyResult <- getUserFromFromDB match {
+    copyResultCount <- getUserFromFromDB match {
       case Some(user) => {
         val userCopy = user.copy(secret = None,
                                  updated_at = Some(new Date()),
@@ -50,11 +47,14 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database])(implicit
                                  login_status = Some(UserLoginStatus.LOGGED_IN)
         )
         ZIO.fromFuture { ex =>
-          db.run(users.filter(_.id === id).update(userCopy)).map(i => if (i == 1) Some(userCopy) else None)
+          db.run(users.filter(_.id === id).update(userCopy))
         }
       }
-      case None => ZIO.fail(new Exception("Invalid secret key"))
+      case None => ZIO.succeed(0)
     }
+    copyResult <-
+      if (copyResultCount == 1) ZIO.succeed("User update Success")
+      else ZIO.fail(new Exception("failed to verifyUser the user"))
   } yield copyResult
 
   def updateUser(user: User, id: Long): ZIO[Database, Throwable, User] = {
