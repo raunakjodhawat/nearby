@@ -2,10 +2,10 @@ package com.raunakjodhawat.nearby
 
 import com.raunakjodhawat.nearby.controllers.Controller
 import com.raunakjodhawat.nearby.models.user.UsersTable
-
 import zio.http._
 import zio._
 import slick.jdbc.PostgresProfile.api._
+import zio.http.endpoint.EndpointMiddleware.None.Err
 
 object Application extends ZIOAppDefault {
   private def initializeDB: ZIO[Any, Throwable, Database] = (for {
@@ -33,6 +33,7 @@ object Application extends ZIOAppDefault {
 
   private val base_path: Path = Root / "api" / "v1"
 
-  private val app = Controller(base_path, db).mapError(e => Response.fromHttpError(HttpError.BadRequest(e.getMessage)))
+  private val app: HttpApp[Database, Response] =
+    Controller(base_path, db)
   override def run = initializeDB *> Server.serve(app).provide(Server.default)
 }
