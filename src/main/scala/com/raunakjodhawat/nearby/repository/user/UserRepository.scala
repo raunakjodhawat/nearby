@@ -27,17 +27,22 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     case None       => throw new Exception("User not found")
   }
 
-  def createUser(user: User): ZIO[Database, Throwable, UsersTable#TableElementType] = for {
-    db <- dbZIO
-    updatedUserFutureZIO <- ZIO.fromFuture { ex =>
-      db.run(
-        users += user.copy(secret = Some(secretKey()), created_at = Some(new Date()), updated_at = Some(new Date()))
-      )
-    }
-    updationResults <-
-      if (updatedUserFutureZIO == 1) ZIO.fromFuture { ex => db.run(users.filter(_.email === user.email).result.head) }
-      else ZIO.fail(new Exception("Error creating user"))
-  } yield updationResults
+  def createUser(user: User): ZIO[Database, Throwable, UsersTable#TableElementType] =
+    for {
+      db <- dbZIO
+      secret <- secretKey
+      updatedUserFutureZIO <- ZIO.fromFuture { ex =>
+        db.run(
+          users += user.copy(secret = Some(secret.toString),
+                             created_at = Some(new Date()),
+                             updated_at = Some(new Date())
+          )
+        )
+      }
+      updationResults <-
+        if (updatedUserFutureZIO == 1) ZIO.fromFuture { ex => db.run(users.filter(_.email === user.email).result.head) }
+        else ZIO.fail(new Exception("Error creating user"))
+    } yield updationResults
 
   def verifyUser(id: Long, secret: String): ZIO[Database, Throwable, String] = for {
     db <- dbZIO

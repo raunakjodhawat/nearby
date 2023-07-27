@@ -20,7 +20,13 @@ libraryDependencies ++= Seq(
   "com.github.jwt-scala" %% "jwt-zio-json" % "9.4.0",
   // Scala test
   "org.scalatest" %% "scalatest" % "3.2.15" % Test,
-  "org.scalamock" %% "scalamock" % "5.2.0" % Test
+  "org.scalamock" %% "scalamock" % "5.2.0" % Test,
+  // zio test
+  "dev.zio" %% "zio-test" % "2.0.15" % Test,
+  "dev.zio" %% "zio-test-sbt" % "2.0.15" % Test,
+  "dev.zio" %% "zio-test-magnolia" % "2.0.15" % Test,
+  "dev.zio" %% "zio-test-junit" % "2.0.15" % "test",
+  "com.github.sbt" % "junit-interface" % "0.13.3" % Test
 )
 
 //coverageEnabled := true
@@ -34,3 +40,4 @@ coverageMinimumBranchPerPackage := 70
 coverageMinimumStmtPerFile := 70
 coverageMinimumBranchPerFile := 70
 Test / parallelExecution := false
+testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")

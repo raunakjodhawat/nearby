@@ -13,20 +13,11 @@ import java.util.Date
 object JsonEncoderDecoder {
   private val df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
-  implicit val dateDecoder: JsonDecoder[Date] = (trace: List[JsonError], in: RetractReader) => {
-    val date: String = in.toString
-    df.parse(date)
-  }
-  implicit val dateEncoder: JsonEncoder[Date] = (a: Date, indent: Option[Int], out: Write) => out.write(df.format(a))
+  implicit val dateDecoder: JsonDecoder[Date] = JsonDecoder[String].map(s => new Date(s.toLong))
+  implicit val dateEncoder: JsonEncoder[Date] = JsonEncoder[Long].contramap(_.getTime)
 
-  implicit val userLocationEncoder: JsonEncoder[UserLocation] = (a: UserLocation, indent: Option[Int], out: Write) =>
-    out.write(s"""{"latitude":${a.lat},"longitude":${a.long}}""")
-  implicit val userLocationDecoder: JsonDecoder[UserLocation] = (trace: List[JsonError], in: RetractReader) => {
-    val json = in.toString
-    val latitude = json.substring(json.indexOf(":") + 1, json.indexOf(",")).toDouble
-    val longitude = json.substring(json.lastIndexOf(":") + 1, json.indexOf("}")).toDouble
-    UserLocation(latitude, longitude)
-  }
+  implicit val userLocationEncoder: JsonEncoder[UserLocation] = DeriveJsonEncoder.gen[UserLocation]
+  implicit val userLocationDecoder: JsonDecoder[UserLocation] = DeriveJsonDecoder.gen[UserLocation]
 
   implicit val loginStatusEncoder: JsonEncoder[UserLoginStatus] =
     (a: UserLoginStatus, indent: Option[Int], out: Write) => out.write(s""""${a.toString}"""")

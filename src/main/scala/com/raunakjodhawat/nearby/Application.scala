@@ -8,14 +8,15 @@ import slick.jdbc.PostgresProfile.api._
 
 object Application extends ZIOAppDefault {
   val dbZIO = ZIO.attempt(Database.forConfig("postgres"))
+  val users = TableQuery[UsersTable]
   private def initializeDB: ZIO[Any, Throwable, Database] = (for {
     db <- dbZIO
     updateFork <- ZIO.fromFuture { ex =>
       {
         db.run(
           DBIO.seq(
-            TableQuery[UsersTable].schema.dropIfExists,
-            TableQuery[UsersTable].schema.createIfNotExists
+            users.schema.dropIfExists,
+            users.schema.createIfNotExists
           )
         )
       }

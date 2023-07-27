@@ -4,11 +4,12 @@ import courier._
 
 import scala.util.Properties
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import java.util.UUID.randomUUID
 import javax.mail.internet.InternetAddress
-
 import zio._
+import zio.Random
+
+import java.util.UUID
 object Utils {
   val mailerHost = Properties.envOrElse("mailerHost", "")
   val mailerUsername = Properties.envOrElse("mailerUsername", "")
@@ -18,7 +19,7 @@ object Utils {
   // credits: https://stackoverflow.com/a/32445372
   private val emailRegex =
     """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""".r
-  def secretKey(): String = randomUUID.toString
+  def secretKey: ZIO[Any, Nothing, UUID] = Random.nextUUID
 
   // credits: https://stackoverflow.com/a/32445372
   def isValidEmail(email: String): Boolean = email match {

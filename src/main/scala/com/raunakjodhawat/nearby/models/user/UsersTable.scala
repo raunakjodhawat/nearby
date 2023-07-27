@@ -26,8 +26,11 @@ object UsersTable {
     s => Avatar.withName(s)
   )
   implicit val userLocationMapping: TypedType[UserLocation] = MappedColumnType.base[UserLocation, String](
-    e => e.toString,
-    _ => UserLocation(0.0, 0.0)
+    userLocation => s"${userLocation.lat},${userLocation.long}",
+    str => {
+      val parts = str.split(",")
+      UserLocation(parts(0).toDouble, parts(1).toDouble)
+    }
   )
   implicit val dateMapping: TypedType[Date] = MappedColumnType.base[Date, String](
     e => e.toString,

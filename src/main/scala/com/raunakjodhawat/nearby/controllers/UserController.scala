@@ -4,12 +4,12 @@ import com.raunakjodhawat.nearby.repository.user.UserRepository
 import com.raunakjodhawat.nearby.utils.Utils.sendEmail
 import com.raunakjodhawat.nearby.models.user.JsonEncoderDecoder._
 import com.raunakjodhawat.nearby.models.user.User
-
 import slick.jdbc.PostgresProfile.api._
-
 import zio._
 import zio.http._
 import zio.json._
+
+import java.util.Date
 
 class UserController(userRepository: UserRepository) {
   def getAllUsers: ZIO[Database, Throwable, Response] = for {
