@@ -4,7 +4,6 @@ import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserLo
 import org.scalatest.wordspec.AnyWordSpec
 import slick.jdbc.PostgresProfile.api._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import slick.dbio.DBIO
 
 import zio._
