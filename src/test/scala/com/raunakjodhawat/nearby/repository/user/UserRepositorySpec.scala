@@ -121,7 +121,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
     test("should throw an error, when updating an non-existent user") {
       val zio = for {
         _ <- clearDB
-        updateUser <- userRepository.updateUser(testUser, 1L, new Date())
+        updateUser <- userRepository.updateUser(testUser, 1L)
       } yield updateUser
       val assertionZIO = zio.fold(
         _ => ZIO.unit,
@@ -133,7 +133,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
       val currentDate = new Date()
       for {
         oldUser <- createAndGetAUser(currentDate)
-        _ <- userRepository.updateUser(oldUser.copy(phone = Some("89837")), 1L, currentDate)
+        _ <- userRepository.updateUser(oldUser.copy(phone = Some("89837")), 1L)
         newUser <- userRepository.getUserById(1L)
       } yield {
         assert(newUser)(

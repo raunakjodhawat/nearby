@@ -71,8 +71,8 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     _ <- ZIO.from(db.close())
   } yield copyResult
 
-  def updateUser(user: User, id: Long, updateDate: Date): ZIO[Database, Throwable, User] = {
-    val userCopy = user.copy(id = Some(id), updated_at = Some(updateDate))
+  def updateUser(user: User, id: Long): ZIO[Database, Throwable, User] = {
+    val userCopy = user.copy(id = Some(id), updated_at = Some(new Date()))
     for {
       db <- dbZIO
       updateResultCount <- ZIO.fromFuture { ex => db.run(users.filter(_.id === id).update(userCopy)) }

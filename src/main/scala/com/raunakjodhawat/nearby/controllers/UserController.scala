@@ -66,7 +66,7 @@ class UserController(userRepository: UserRepository) {
           for {
             resultZIO <- for {
               fib <- userRepository
-                .updateUser(user, id, new Date())
+                .updateUser(user, id)
                 .fork
               res <- fib.await
             } yield res match {
