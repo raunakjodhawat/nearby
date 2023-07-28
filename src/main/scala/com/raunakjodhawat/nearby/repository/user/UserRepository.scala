@@ -77,8 +77,8 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
       db <- dbZIO
       updateResultCount <- ZIO.fromFuture { ex => db.run(users.filter(_.id === id).update(userCopy)) }
       updateResult <-
-        if (updateResultCount == 1) ZIO.succeed(println("all done")) *> ZIO.succeed(userCopy)
-        else ZIO.succeed(println("all done")) *> ZIO.fail(new Exception("failed to update the user"))
+        if (updateResultCount == 1) ZIO.succeed(userCopy)
+        else ZIO.fail(new Exception("failed to update the user"))
       _ <- ZIO.from(db.close())
     } yield updateResult
   }
