@@ -26,7 +26,9 @@ libraryDependencies ++= Seq(
   "dev.zio" %% "zio-test-sbt" % "2.0.15" % Test,
   "dev.zio" %% "zio-test-magnolia" % "2.0.15" % Test,
   "dev.zio" %% "zio-test-junit" % "2.0.15" % "test",
-  "com.github.sbt" % "junit-interface" % "0.13.3" % Test
+  "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.15" % Test,
+  "org.scalatestplus" %% "junit-4-13" % "3.2.15.0" % Test
 )
 
 //coverageEnabled := true

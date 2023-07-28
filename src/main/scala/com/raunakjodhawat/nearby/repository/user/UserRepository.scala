@@ -17,11 +17,13 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
   def getAllUsers: ZIO[Database, Throwable, Seq[UsersTable#TableElementType]] = for {
     db <- dbZIO
     getAllUsersFutureZIO <- ZIO.fromFuture { ex => db.run(users.result) }
+    _ <- ZIO.from(db.close())
   } yield getAllUsersFutureZIO
 
   def getUserById(id: Long): ZIO[Database, Throwable, UsersTable#TableElementType] = (for {
     db <- dbZIO
     getUserByIdFutureZIO <- ZIO.fromFuture { ex => db.run(users.filter(x => x.id === id).result.headOption) }
+    _ <- ZIO.from(db.close())
   } yield getUserByIdFutureZIO).flatMap {
     case Some(user) => ZIO.succeed(user)
     case None       => ZIO.fail(new Exception("unable to find the user"))
@@ -42,6 +44,7 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
       updationResults <-
         if (updatedUserFutureZIO == 1) ZIO.fromFuture { ex => db.run(users.filter(_.email === user.email).result.head) }
         else ZIO.fail(new Exception("Error creating user"))
+      _ <- ZIO.from(db.close())
     } yield updationResults
 
   def verifyUser(id: Long, secret: String): ZIO[Database, Throwable, String] = for {
@@ -65,16 +68,18 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     copyResult <-
       if (copyResultCount == 1) ZIO.succeed("User update Success")
       else ZIO.fail(new Exception("failed to verifyUser the user"))
+    _ <- ZIO.from(db.close())
   } yield copyResult
 
-  def updateUser(user: User, id: Long): ZIO[Database, Throwable, User] = {
-    val userCopy = user.copy(id = Some(id), updated_at = Some(new Date()))
+  def updateUser(user: User, id: Long, updateDate: Date): ZIO[Database, Throwable, User] = {
+    val userCopy = user.copy(id = Some(id), updated_at = Some(updateDate))
     for {
       db <- dbZIO
       updateResultCount <- ZIO.fromFuture { ex => db.run(users.filter(_.id === id).update(userCopy)) }
       updateResult <-
-        if (updateResultCount == 1) ZIO.succeed(userCopy)
-        else ZIO.fail(new Exception("failed to update the user"))
+        if (updateResultCount == 1) ZIO.succeed(println("all done")) *> ZIO.succeed(userCopy)
+        else ZIO.succeed(println("all done")) *> ZIO.fail(new Exception("failed to update the user"))
+      _ <- ZIO.from(db.close())
     } yield updateResult
   }
 }

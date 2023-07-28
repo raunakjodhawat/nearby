@@ -1,7 +1,6 @@
 package com.raunakjodhawat.nearby.repository.user
 
-import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserLoginStatus, UserStatus, UsersTable}
-import org.scalatest.wordspec.AnyWordSpec
+import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserLoginStatus, UserStatus}
 import slick.jdbc.PostgresProfile.api._
 import slick.dbio.DBIO
 import zio._
@@ -9,8 +8,7 @@ import zio.test._
 import zio.test.Assertion._
 import zio.test.junit.JUnitRunnableSpec
 
-import java.util.{Date, UUID}
-import scala.concurrent.Future
+import java.util.Date
 import scala.util.Properties
 object UserRepositorySpec {
   val dbZIO = ZIO.attempt(Database.forConfig(Properties.envOrElse("DBPATH", "postgres-test-local")))
@@ -35,11 +33,6 @@ object UserRepositorySpec {
     Some(UserLoginStatus.LOGGED_IN),
     Some(Avatar.AV_1)
   )
-  trait Environment {
-
-    val runtime = Runtime.default
-  }
-
   def clearDB: ZIO[Any, Throwable, Unit] = {
     for {
       db <- dbZIO
@@ -54,7 +47,22 @@ object UserRepositorySpec {
         }
       }.fork
       _ <- clearDBFork.join
+      _ <- ZIO.from(db.close())
     } yield ()
+  }
+
+  def createAndGetAUser(currentDate: Date): ZIO[Database, Throwable, User] = for {
+    _ <- clearDB
+    _ <- TestRandom.feedLongs(123456789L, 987654321L, 555555555L)
+    uuid <- Random.nextUUID
+    _ <- TestRandom.feedUUIDs(uuid)
+    _ <- userRepository.createUser(testUser)
+    findUserZIO <- userRepository.getUserById(testUser.id.get)
+  } yield {
+    findUserZIO.copy(
+      created_at = Some(currentDate),
+      updated_at = Some(currentDate)
+    )
   }
 }
 class UserRepositorySpec extends JUnitRunnableSpec {
@@ -63,7 +71,8 @@ class UserRepositorySpec extends JUnitRunnableSpec {
   def spec = suite("user repository spec")(
     getAllUsersSuite,
     createUserSuite,
-    getUserByIdSuite
+    getUserByIdSuite,
+    updateUserSuite
   ).provide(ZLayer.fromZIO(dbZIO)) @@ TestAspect.sequential
 
   def getAllUsersSuite = suite("Get All Users Spec")(
@@ -78,20 +87,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
 
   def createAndGetAUserTest = test("successfully creates a new user, puts it into the database, and retrieves it") {
     val currentDate = new Date()
-    val zio = for {
-      _ <- clearDB
-      _ <- TestRandom.feedLongs(123456789L, 987654321L, 555555555L)
-      uuid <- Random.nextUUID
-      _ <- TestRandom.feedUUIDs(uuid)
-      _ <- userRepository.createUser(testUser)
-      findUserZIO <- userRepository.getUserById(testUser.id.get)
-    } yield {
-      findUserZIO.copy(
-        created_at = Some(currentDate),
-        updated_at = Some(currentDate)
-      )
-    }
-    assertZIO(zio)(
+    assertZIO(createAndGetAUser(currentDate))(
       Assertion.equalTo(
         testUser.copy(
           secret = Some("00000000-075b-4d15-8000-00003ade68b1"),
@@ -119,5 +115,38 @@ class UserRepositorySpec extends JUnitRunnableSpec {
       assertZIO(assertionZIO)(equalTo(ZIO.unit))
     },
     createAndGetAUserTest
+  ) @@ TestAspect.timed
+
+  def updateUserSuite = suite("Update User")(
+    test("should throw an error, when updating an non-existent user") {
+      val zio = for {
+        _ <- clearDB
+        updateUser <- userRepository.updateUser(testUser, 1L, new Date())
+      } yield updateUser
+      val assertionZIO = zio.fold(
+        _ => ZIO.unit,
+        _ => ZIO.fail("Assertion failed")
+      )
+      assertZIO(assertionZIO)(equalTo(ZIO.unit))
+    },
+    test("should be able to create, get and update a user") {
+      val currentDate = new Date()
+      for {
+        oldUser <- createAndGetAUser(currentDate)
+        _ <- userRepository.updateUser(oldUser.copy(phone = Some("89837")), 1L, currentDate)
+        newUser <- userRepository.getUserById(1L)
+      } yield {
+        assert(newUser)(
+          Assertion.equalTo(
+            oldUser.copy(
+              phone = Some("89837"),
+              secret = Some("00000000-075b-4d15-8000-00003ade68b1"),
+              created_at = newUser.created_at,
+              updated_at = newUser.updated_at
+            )
+          )
+        )
+      }
+    } @@ TestAspect.timeout(10.seconds)
   )
 }
