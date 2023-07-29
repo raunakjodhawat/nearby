@@ -1,12 +1,13 @@
 package com.raunakjodhawat.nearby.repository.user
 
 import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserLoginStatus, UserStatus}
+import org.junit.runner.RunWith
 import slick.jdbc.PostgresProfile.api._
 import slick.dbio.DBIO
 import zio._
 import zio.test._
 import zio.test.Assertion._
-import zio.test.junit.JUnitRunnableSpec
+import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
 
 import java.util.Date
 import scala.util.Properties
@@ -65,6 +66,7 @@ object UserRepositorySpec {
     )
   }
 }
+@RunWith(classOf[ZTestJUnitRunner])
 class UserRepositorySpec extends JUnitRunnableSpec {
   import UserRepositorySpec._
 
@@ -136,7 +138,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
         _ <- userRepository.updateUser(oldUser.copy(phone = Some("89837")), 1L)
         newUser <- userRepository.getUserById(1L)
       } yield {
-        assert(newUser)(
+        zio.test.assert(newUser)(
           Assertion.equalTo(
             oldUser.copy(
               phone = Some("89837"),

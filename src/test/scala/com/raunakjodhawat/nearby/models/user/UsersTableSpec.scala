@@ -1,5 +1,16 @@
 package com.raunakjodhawat.nearby.models.user
 
-import org.scalatest.flatspec.AnyFlatSpec
+import org.junit.runner.RunWith
+import zio.test._
+import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
 
-class UsersTableSpec extends AnyFlatSpec {}
+@RunWith(classOf[ZTestJUnitRunner])
+class UsersTableSpec extends JUnitRunnableSpec {
+  def spec = suite("some constants")(
+    test(
+      "some cons"
+    ) {
+      assertTrue(true)
+    }
+  )
+}
