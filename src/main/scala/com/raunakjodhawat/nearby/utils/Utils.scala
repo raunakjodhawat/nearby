@@ -74,7 +74,7 @@ object Utils {
     }.fork
     mailSenderResult <- mailSenderFiber.await
   } yield mailSenderResult match {
-    case Exit.Success(_) => println("message delivered")
-    case Exit.Failure(_) => println(s"delivery failed")
+    case Exit.Success(_) => ZIO.succeed("message delivered")
+    case Exit.Failure(_) => ZIO.fail(s"delivery failed")
   }
 }

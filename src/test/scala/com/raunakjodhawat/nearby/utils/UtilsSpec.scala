@@ -2,11 +2,13 @@ package com.raunakjodhawat.nearby.utils
 
 import com.raunakjodhawat.nearby.utils.Utils._
 import courier._
+import org.junit.runner.RunWith
 import org.scalamock.scalatest.MockFactory
 import zio._
 import zio.test._
-import zio.test.junit.JUnitRunnableSpec
+import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
 
+@RunWith(classOf[ZTestJUnitRunner])
 class UtilsSpec extends JUnitRunnableSpec with MockFactory {
   def spec = suite("Utils Spec")(
     suite("constants")(

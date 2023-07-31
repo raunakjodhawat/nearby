@@ -30,6 +30,7 @@ libraryDependencies ++= Seq(
   "org.scalatestplus" %% "junit-4-13" % "3.2.15.0" % Test,
   "info.senia" %% "zio-test-akka-http" % "2.0.4"
 )
+testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
 //coverageEnabled := true

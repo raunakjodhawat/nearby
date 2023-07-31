@@ -7,12 +7,9 @@ import com.raunakjodhawat.nearby.models.user.UserStatus.UserStatus
 import zio.json.{DeriveJsonDecoder, DeriveJsonEncoder, JsonDecoder, JsonEncoder, JsonError}
 import zio.json.internal.{RetractReader, Write}
 
-import java.text.SimpleDateFormat
 import java.util.Date
 
 object JsonEncoderDecoder {
-  private val df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-
   implicit val dateDecoder: JsonDecoder[Date] = JsonDecoder[String].map(s => new Date(s.toLong))
   implicit val dateEncoder: JsonEncoder[Date] = JsonEncoder[Long].contramap(_.getTime)
 
