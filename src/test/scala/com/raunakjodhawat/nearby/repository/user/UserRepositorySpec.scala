@@ -32,7 +32,7 @@ object UserRepositorySpec {
     Some(new java.util.Date()),
     Some(UserStatus.ACTIVE),
     Some(UserLoginStatus.LOGGED_IN),
-    Some(Avatar.AV_1)
+    Some(Avatar.withName("AV_1"))
   )
   def clearDB: ZIO[Any, Throwable, Unit] = {
     for {

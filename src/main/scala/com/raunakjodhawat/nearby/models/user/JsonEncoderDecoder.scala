@@ -1,8 +1,7 @@
 package com.raunakjodhawat.nearby.models.user
 
-import com.raunakjodhawat.nearby.models.user.Avatar.Avatar
-import com.raunakjodhawat.nearby.models.user.UserLoginStatus.UserLoginStatus
-import com.raunakjodhawat.nearby.models.user.UserStatus.UserStatus
+import com.raunakjodhawat.nearby.models.user.UserLoginStatus
+import com.raunakjodhawat.nearby.models.user.UserStatus
 
 import zio.json.{DeriveJsonDecoder, DeriveJsonEncoder, JsonDecoder, JsonEncoder, JsonError}
 import zio.json.internal.{RetractReader, Write}
