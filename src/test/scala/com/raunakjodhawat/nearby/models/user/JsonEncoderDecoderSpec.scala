@@ -25,10 +25,15 @@ object JsonEncoderDecoderSpec {
     userLocationDecoder
       .decodeJson(userLocationString)
 
-  val userAvatar: Avatar = Avatar.withName("AV_1")
-  val userAvatarString: String = "\"AV_1\""
+  val userAvatar: Avatar = Avatar.withName("AV_4")
+  val userAvatarString: String = "\"AV_4\""
   val avatarEncodeJSON: CharSequence = avatarEncoder.encodeJson(userAvatar)
-  val avatarDecodeJSON: Either[String, Avatar] = avatarDecoder.decodeJson("\"AV_11\"")
+  val avatarDecodeJSON: Either[String, Avatar] = avatarDecoder.decodeJson(userAvatarString)
+
+  val userStatus: UserStatus = UserStatus.withName("ACTIVE")
+  val userStatusString: String = "\"ACTIVE\""
+  val userStatusEncodeJSON: CharSequence = userStatusEncoder.encodeJson(userStatus)
+  val userStatusDecodeJSON: Either[String, UserStatus] = userStatusDecoder.decodeJson(userStatusString)
 }
 class JsonEncoderDecoderSpec extends JUnitRunnableSpec {
   import JsonEncoderDecoderSpec._

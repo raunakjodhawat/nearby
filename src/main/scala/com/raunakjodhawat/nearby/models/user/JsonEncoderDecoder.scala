@@ -27,6 +27,7 @@ object JsonEncoderDecoder {
 
   implicit val avatarDecoder: JsonDecoder[Avatar] = (trace: List[JsonError], in: RetractReader) => {
     val json = in.toString
+    println(json.substring(1, json.length - 1))
     Avatar.withName(json.substring(1, json.length - 1))
   }
   implicit val userStatusEncoder: JsonEncoder[UserStatus] = (a: UserStatus, indent: Option[Int], out: Write) =>
