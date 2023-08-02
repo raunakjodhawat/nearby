@@ -54,7 +54,10 @@ object Avatar {
     "AV_9" -> AV_9,
     "AV_10" -> AV_10
   )
-  def withName(name: String): Avatar = nameMap.getOrElse(name, AV_1)
+  def withName(name: String): Avatar = {
+    println(s"this is the input name: $name")
+    nameMap.getOrElse(s""""$name"""", AV_1)
+  }
 }
 case class UserLocation(lat: Double, long: Double)
 case class User(

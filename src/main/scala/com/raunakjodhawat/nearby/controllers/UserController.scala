@@ -4,9 +4,10 @@ import com.raunakjodhawat.nearby.repository.user.UserRepository
 import com.raunakjodhawat.nearby.utils.Utils.sendEmail
 import com.raunakjodhawat.nearby.models.user.JsonEncoderDecoder._
 import com.raunakjodhawat.nearby.models.user.User
-
+import io.circe._
+import io.circe.syntax._
+import io.circe.parser.decode
 import slick.jdbc.PostgresProfile.api._
-
 import zio._
 import zio.http._
 import zio.json._
@@ -21,7 +22,7 @@ class UserController(userRepository: UserRepository) {
       case Exit.Failure(cause) => ZIO.failCause(cause)
     }
     result <- resultZIO
-  } yield Response.json(result.toJson)
+  } yield Response.json(decode[Seq[User]](result.asJson.toString()).getOrElse(Seq.empty.toString()))
 
   def getUserById(id: Long): ZIO[Database, Throwable, Response] = for {
     resultZIO <- for {
@@ -32,12 +33,12 @@ class UserController(userRepository: UserRepository) {
       case Exit.Failure(cause) => ZIO.failCause(cause)
     }
     result <- resultZIO
-  } yield Response.json(result.toJson)
+  } yield Response.json(result.asJson.asString.get)
 
   // Used for signup requests
   def createUser(body: Body): ZIO[Database, Throwable, Response] = {
     body.asString
-      .map(_.fromJson[User])
+      .map(decode[User])
       .flatMap {
         case Left(e) => ZIO.fail(new Exception(e))
         case Right(user) =>
@@ -59,7 +60,7 @@ class UserController(userRepository: UserRepository) {
 
   def updateUser(body: Body, id: Long): ZIO[Database, Throwable, Response] = {
     body.asString
-      .map(_.fromJson[User])
+      .map(decode[User])
       .flatMap {
         case Left(e) => ZIO.fail(new Exception(e))
         case Right(user) => {
@@ -74,7 +75,7 @@ class UserController(userRepository: UserRepository) {
               case Exit.Failure(cause) => ZIO.failCause(cause)
             }
             user <- resultZIO
-          } yield Response.json(user.toJson)
+          } yield Response.json(user.asJson.toString())
         }
       }
   }
