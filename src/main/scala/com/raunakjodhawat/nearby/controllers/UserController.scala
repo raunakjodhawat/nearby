@@ -10,7 +10,6 @@ import io.circe.parser.decode
 import slick.jdbc.PostgresProfile.api._
 import zio._
 import zio.http._
-import zio.json._
 
 class UserController(userRepository: UserRepository) {
   def getAllUsers: ZIO[Database, Throwable, Response] = for {
@@ -22,7 +21,7 @@ class UserController(userRepository: UserRepository) {
       case Exit.Failure(cause) => ZIO.failCause(cause)
     }
     result <- resultZIO
-  } yield Response.json(decode[Seq[User]](result.asJson.toString()).getOrElse(Seq.empty.toString()))
+  } yield Response.json(result.asJson.toString())
 
   def getUserById(id: Long): ZIO[Database, Throwable, Response] = for {
     resultZIO <- for {
@@ -54,7 +53,7 @@ class UserController(userRepository: UserRepository) {
             }
             user <- resultZIO
             _ <- sendEmail(user.secret.get, user.id.getOrElse(0L), user.username, user.email).fork
-          } yield Response.json(user.toJson)
+          } yield Response.json(user.asJson.toString())
       }
   }
 

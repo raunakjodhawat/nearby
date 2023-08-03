@@ -6,8 +6,6 @@ import slick.lifted.Tag
 
 import java.util.Date
 
-import zio.json.{DeriveJsonDecoder, JsonDecoder}
-
 object UsersTable {
   implicit val userStatusMapping: TypedType[UserStatus] = MappedColumnType.base[UserStatus, String](
     e => e.toString,
@@ -32,7 +30,6 @@ object UsersTable {
     e => e.toString,
     _ => new Date()
   )
-  implicit val decoder1: JsonDecoder[UserLocation] = DeriveJsonDecoder.gen[UserLocation]
 }
 class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
   import UsersTable._

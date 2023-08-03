@@ -29,36 +29,12 @@ object UserLoginStatus {
   )
   def withName(name: String): UserLoginStatus = nameMap.getOrElse(name, LOGGED_OUT)
 }
-sealed trait Avatar
-object Avatar {
-  case object AV_1 extends Avatar
-  case object AV_2 extends Avatar
-  case object AV_3 extends Avatar
-  case object AV_4 extends Avatar
-  case object AV_5 extends Avatar
-  case object AV_6 extends Avatar
-  case object AV_7 extends Avatar
-  case object AV_8 extends Avatar
-  case object AV_9 extends Avatar
-  case object AV_10 extends Avatar
-
-  val nameMap: Map[String, Avatar] = Map(
-    "AV_1" -> AV_1,
-    "AV_2" -> AV_2,
-    "AV_3" -> AV_3,
-    "AV_4" -> AV_4,
-    "AV_5" -> AV_5,
-    "AV_6" -> AV_6,
-    "AV_7" -> AV_7,
-    "AV_8" -> AV_8,
-    "AV_9" -> AV_9,
-    "AV_10" -> AV_10
-  )
-  def withName(name: String): Avatar = {
-    println(s"this is the input name: $name")
-    nameMap.getOrElse(s""""$name"""", AV_1)
-  }
+object Avatar extends Enumeration {
+  type Avatar = Value
+  val AV_1, AV_2, AV_3, AV_4, AV_5, AV_6, AV_7, AV_8, AV_9, AV_10 = Value
 }
+
+import Avatar._
 case class UserLocation(lat: Double, long: Double)
 case class User(
   id: Option[Long],
