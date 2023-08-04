@@ -21,7 +21,7 @@ class UserController(userRepository: UserRepository) {
       case Exit.Failure(cause) => ZIO.failCause(cause)
     }
     result <- resultZIO
-  } yield Response.json(result.asJson.toString())
+  } yield if (result.isEmpty) Response.status(Status.NoContent) else Response.json(result.asJson.toString())
 
   def getUserById(id: Long): ZIO[Database, Throwable, Response] = for {
     resultZIO <- for {
@@ -32,7 +32,7 @@ class UserController(userRepository: UserRepository) {
       case Exit.Failure(cause) => ZIO.failCause(cause)
     }
     result <- resultZIO
-  } yield Response.json(result.asJson.asString.get)
+  } yield Response.json(result.asJson.toString())
 
   // Used for signup requests
   def createUser(body: Body): ZIO[Database, Throwable, Response] = {
