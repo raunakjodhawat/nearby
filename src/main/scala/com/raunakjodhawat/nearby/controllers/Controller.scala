@@ -8,7 +8,8 @@ import zio._
 import zio.http._
 
 object Controller {
-  def apply(base_path: Path, db: ZIO[Any, Throwable, Database]): HttpApp[Database, Response] = {
+  def apply(db: ZIO[Any, Throwable, Database]): HttpApp[Database, Response] = {
+    val base_path: Path = Root / "api" / "v1"
     val userRepository = new UserRepository(db)
     val vc = new VerificationController(userRepository)
     val uc = new UserController(userRepository)

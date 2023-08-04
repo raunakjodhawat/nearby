@@ -6,16 +6,17 @@ import zio.http._
 import zio._
 import slick.jdbc.PostgresProfile.api._
 
-object Application extends ZIOAppDefault {
+object databaseConfiguration {
   val dbZIO = ZIO.attempt(Database.forConfig("postgres"))
-  private def initializeDB: ZIO[Any, Throwable, Database] = (for {
+  val users = TableQuery[UsersTable]
+  def initializeDB: ZIO[Any, Throwable, Database] = (for {
     db <- dbZIO
     updateFork <- ZIO.fromFuture { ex =>
       {
         db.run(
           DBIO.seq(
-            TableQuery[UsersTable].schema.dropIfExists,
-            TableQuery[UsersTable].schema.createIfNotExists
+            users.schema.dropIfExists,
+            users.schema.createIfNotExists
           )
         )
       }
@@ -28,8 +29,10 @@ object Application extends ZIOAppDefault {
         new Exception("Failed to initialize")
       )
   }).flatMap(x => x)
+}
+object Application extends ZIOAppDefault {
+  import databaseConfiguration._
 
-  private val base_path: Path = Root / "api" / "v1"
-  private val app: HttpApp[Database, Response] = Controller(base_path, dbZIO)
+  private val app: HttpApp[Database, Response] = Controller(dbZIO)
   override def run = initializeDB *> Server.serve(app).provide(Server.default, ZLayer.fromZIO(dbZIO))
 }

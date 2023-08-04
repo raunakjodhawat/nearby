@@ -21,7 +21,7 @@ mailerPassword= (password of your mailgun account)
 
 ## Running test
 ### With Docker
-`sbt test` is containerized. Hence, it requires docker to be installed on your machine.
+`source .env.test && sbt test` is containerized. Hence, it requires docker to be installed on your machine.
 1. chmod +x ./scripts/runTests.sh
 2. ./scripts/runTests.sh
 
@@ -29,7 +29,7 @@ mailerPassword= (password of your mailgun account)
 ### On Local
 1. Run postgres on your machine
 2. Create nearby_test database with user nearby_test and password nearby_test
-3. Run `sbt test` in the root directory of the project
+3. Run `source env.test && sbt test` in the root directory of the project
 4. It's always a good idea to have maximum code coverage. To check code coverage run `sbt coverage +test +coverageReport` in the root directory of the project.
 5. Coverage report can be found at `target/scala-2.13/scoverage-report/index.html`
 

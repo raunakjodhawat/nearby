@@ -6,6 +6,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "nearby"
   )
+val circeVersion = "0.14.5"
 libraryDependencies ++= Seq(
   "dev.zio" %% "zio" % "2.0.15",
   "dev.zio" %% "zio-http" % "3.0.0-RC2",
@@ -19,11 +20,25 @@ libraryDependencies ++= Seq(
   // jwt token
   "com.github.jwt-scala" %% "jwt-zio-json" % "9.4.0",
   // Scala test
+  "org.scalamock" %% "scalamock" % "5.2.0" % Test,
+  // zio test
+  "dev.zio" %% "zio-test" % "2.0.15" % Test,
+  "dev.zio" %% "zio-test-sbt" % "2.0.15" % Test,
+  "dev.zio" %% "zio-test-magnolia" % "2.0.15" % Test,
+  "dev.zio" %% "zio-test-junit" % "2.0.15" % "test",
+  "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
   "org.scalatest" %% "scalatest" % "3.2.15" % Test,
-  "org.scalamock" %% "scalamock" % "5.2.0" % Test
+  "org.scalatestplus" %% "junit-4-13" % "3.2.15.0" % Test,
+  "info.senia" %% "zio-test-akka-http" % "2.0.4",
+  // json
+  "io.circe" %% "circe-core" % circeVersion,
+  "io.circe" %% "circe-generic" % circeVersion,
+  "io.circe" %% "circe-parser" % circeVersion
 )
+testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
+testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
-//coverageEnabled := true
+coverageEnabled := false
 // Coverage settings
 coverageHighlighting := true
 coverageFailOnMinimum := false
@@ -33,4 +48,3 @@ coverageMinimumStmtPerPackage := 70
 coverageMinimumBranchPerPackage := 70
 coverageMinimumStmtPerFile := 70
 coverageMinimumBranchPerFile := 70
-Test / parallelExecution := false

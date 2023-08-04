@@ -1,13 +1,16 @@
 package com.raunakjodhawat.nearby.controllers
 
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.flatspec.AnyFlatSpec
-import slick.jdbc.PositionedResult
+import akka.http.scaladsl.model.HttpResponse
+import akka.http.scaladsl.server.Directives.complete
+import zio.test.Assertion._
+import zio.test._
+import zio.test.akkahttp.AkkaZIOSpecDefault
 
-object ControllerSpec {
-  implicit val conv: PositionedResult => (String, String, String, String) = { r =>
-    (r.nextString(), r.nextString(), r.nextString(), r.nextString())
-  }
+class ControllerSpec extends AkkaZIOSpecDefault {
+  def spec =
+    suite("MySpec")(
+      test("my test") {
+        assertTrue(true)
+      }
+    )
 }
-
-class ControllerSpec extends AnyFlatSpec with MockFactory {}
