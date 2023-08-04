@@ -1,11 +1,9 @@
 package com.raunakjodhawat.nearby.models.user
 
-import com.raunakjodhawat.nearby.models.user.UserSpec.user
-import org.junit.runner.RunWith
-import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
-import zio.test._
-
 import java.util.Date
+
+import zio.test._
+import zio.test.junit.JUnitRunnableSpec
 
 object UserSpec {
   val dateLong: Long = 1690788936
@@ -31,6 +29,7 @@ object UserSpec {
   )
 }
 class UserSpec extends JUnitRunnableSpec {
+  import UserSpec._
   def spec = suite("Users")(
     test("UserStatus") {
       assert(UserStatus("Active").toString)(Assertion.equalTo("UserStatus(Active)"))

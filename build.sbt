@@ -38,7 +38,7 @@ libraryDependencies ++= Seq(
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
-//coverageEnabled := true
+coverageEnabled := false
 // Coverage settings
 coverageHighlighting := true
 coverageFailOnMinimum := false

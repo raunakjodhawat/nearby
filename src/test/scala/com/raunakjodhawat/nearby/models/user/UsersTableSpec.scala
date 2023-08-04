@@ -1,10 +1,12 @@
 package com.raunakjodhawat.nearby.models.user
 
-import org.junit.runner.RunWith
+import slick.lifted.TableQuery
 import zio.test._
-import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
+import zio.test.junit.JUnitRunnableSpec
 
-@RunWith(classOf[ZTestJUnitRunner])
+object UsersTableSpec {
+  val usersTable = TableQuery[UsersTable]
+}
 class UsersTableSpec extends JUnitRunnableSpec {
   def spec = suite("some constants")(
     test(
