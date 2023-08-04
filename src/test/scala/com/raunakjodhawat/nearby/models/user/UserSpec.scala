@@ -1,85 +1,55 @@
 package com.raunakjodhawat.nearby.models.user
 
+import com.raunakjodhawat.nearby.models.user.UserSpec.user
 import org.junit.runner.RunWith
 import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
 import zio.test._
 
-@RunWith(classOf[ZTestJUnitRunner])
+import java.util.Date
+
+object UserSpec {
+  val dateLong: Long = 1690788936
+  val date: Date = new Date(dateLong)
+  val user: User = User(
+    Some(1L),
+    "username",
+    "user123",
+    Some("secret"),
+    "email",
+    Some("phone"),
+    Some("address"),
+    Some("city"),
+    Some("state"),
+    Some("country"),
+    Some("zip"),
+    Some(UserLocation(2.3, 4.5)),
+    Some(date),
+    Some(date),
+    Some(UserStatus("ACTIVE")),
+    Some(UserLoginStatus("LOGGED_IN")),
+    Some(Avatar("AV_1"))
+  )
+}
 class UserSpec extends JUnitRunnableSpec {
-  def spec = suite("some constants")(
-    test(
-      "some cons"
-    ) {
-      assertTrue(true)
+  def spec = suite("Users")(
+    test("UserStatus") {
+      assert(UserStatus("Active").toString)(Assertion.equalTo("UserStatus(Active)"))
+    },
+    test("UserLoginStatus") {
+      assert(UserStatus("LOGGED_IN").toString)(Assertion.equalTo("UserStatus(LOGGED_IN)"))
+    },
+    test("Avatar") {
+      assert(Avatar("AV_1").toString)(Assertion.equalTo("Avatar(AV_1)"))
+    },
+    test("UserLocation") {
+      assert(UserLocation(12, 10).toString)(Assertion.equalTo("UserLocation(12.0,10.0)"))
+    },
+    test("User") {
+      assert(user.toString)(
+        Assertion.equalTo(
+          "User(Some(1),username,user123,Some(secret),email,Some(phone),Some(address),Some(city),Some(state),Some(country),Some(zip),Some(UserLocation(2.3,4.5)),Some(Tue Jan 20 19:09:48 IST 1970),Some(Tue Jan 20 19:09:48 IST 1970),Some(UserStatus(ACTIVE)),Some(UserLoginStatus(LOGGED_IN)),Some(Avatar(AV_1)))"
+        )
+      )
     }
   )
-//  "user Status" should "be able to use all values" in {
-//    assert(UserStatus.ACTIVE.toString == "ACTIVE")
-//    assert(UserStatus.INACTIVE.toString == "INACTIVE")
-//    assert(UserStatus.DELETED.toString == "DELETED")
-//  }
-//
-//  "user login status" should "be able to use all values" in {
-//    assert(UserLoginStatus.LOGGED_IN.toString == "LOGGED_IN")
-//    assert(UserLoginStatus.LOGGED_OUT.toString == "LOGGED_OUT")
-//  }
-//
-//  "avatar" should "be able to use all values" in {
-//    assert(Avatar.AV_1.toString == "AV_1")
-//    assert(Avatar.AV_2.toString == "AV_2")
-//    assert(Avatar.AV_3.toString == "AV_3")
-//    assert(Avatar.AV_4.toString == "AV_4")
-//    assert(Avatar.AV_5.toString == "AV_5")
-//    assert(Avatar.AV_6.toString == "AV_6")
-//    assert(Avatar.AV_7.toString == "AV_7")
-//    assert(Avatar.AV_8.toString == "AV_8")
-//    assert(Avatar.AV_9.toString == "AV_9")
-//    assert(Avatar.AV_10.toString == "AV_10")
-//  }
-//
-//  "user location" should "be able to use all values" in {
-//    val userLocation = UserLocation(1.0, 1.0)
-//    assert(userLocation.lat == 1.0)
-//    assert(userLocation.long == 1.0)
-//  }
-//
-//  "user" should "be valid" in {
-//    val user = User(
-//      id = Some(1),
-//      username = "username",
-//      password = "password",
-//      secret = Some("secret"),
-//      email = "email",
-//      phone = Some("phone"),
-//      address = Some("address"),
-//      city = Some("city"),
-//      state = Some("state"),
-//      country = Some("country"),
-//      pincode = Some("pincode"),
-//      location = Some(UserLocation(1.0, 1.0)),
-//      created_at = Some(new java.util.Date()),
-//      updated_at = Some(new java.util.Date()),
-//      status = Some(UserStatus.ACTIVE),
-//      login_status = Some(UserLoginStatus.LOGGED_IN),
-//      avatar = Some(Avatar.AV_1)
-//    )
-//    assert(user.id.get == 1)
-//    assert(user.username == "username")
-//    assert(user.password == "password")
-//    assert(user.secret.get == "secret")
-//    assert(user.email == "email")
-//    assert(user.phone.get == "phone")
-//    assert(user.address.get == "address")
-//    assert(user.city.get == "city")
-//    assert(user.state.get == "state")
-//    assert(user.country.get == "country")
-//    assert(user.pincode.get == "pincode")
-//    assert(user.location.get.lat == 1.0)
-//    assert(user.location.get.long == 1.0)
-//    assert(user.created_at.get != null)
-//    assert(user.updated_at.get != null)
-//    assert(user.status.get == UserStatus.ACTIVE)
-//    assert(user.login_status.get == UserLoginStatus.LOGGED_IN)
-//    assert(user.avatar.get == Avatar.AV_1)
-//  }
 }
