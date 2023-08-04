@@ -1,10 +1,7 @@
 package com.raunakjodhawat.nearby.models.user
 
-import com.raunakjodhawat.nearby.models.user.Avatar.Avatar
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe._
-import io.circe.generic.auto._
-import io.circe.syntax._
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
 import java.util.Date
 
@@ -15,11 +12,11 @@ object JsonEncoderDecoder {
   implicit val encodeUserLocation: Encoder[UserLocation] = deriveEncoder[UserLocation]
   implicit val decodeUserLocation: Decoder[UserLocation] = deriveDecoder[UserLocation]
 
+  implicit lazy val avatarEncoder: Encoder[Avatar] = deriveEncoder[Avatar]
+  implicit val avatarDecoder: Decoder[Avatar] = deriveDecoder[Avatar]
+
   implicit val loginStatusEncoder: Encoder[UserLoginStatus] = deriveEncoder[UserLoginStatus]
   implicit val loginStatusDecoder: Decoder[UserLoginStatus] = deriveDecoder[UserLoginStatus]
-
-  implicit val avatarEncoder: Encoder[Avatar] = deriveEncoder[Avatar]
-  implicit val avatarDecoder: Decoder[Avatar] = deriveDecoder[Avatar]
 
   implicit val userStatusEncoder: Encoder[UserStatus] = deriveEncoder[UserStatus]
   implicit val userStatusDecoder: Decoder[UserStatus] = deriveDecoder[UserStatus]

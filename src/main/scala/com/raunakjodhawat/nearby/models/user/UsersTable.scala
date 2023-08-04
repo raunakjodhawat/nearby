@@ -9,15 +9,15 @@ import java.util.Date
 object UsersTable {
   implicit val userStatusMapping: TypedType[UserStatus] = MappedColumnType.base[UserStatus, String](
     e => e.toString,
-    s => UserStatus.withName(s)
+    s => UserStatus(s)
   )
   implicit val userLoginStatusMapping: TypedType[UserLoginStatus] = MappedColumnType.base[UserLoginStatus, String](
     e => e.toString,
-    s => UserLoginStatus.withName(s)
+    s => UserLoginStatus(s)
   )
   implicit val avatarMapping: TypedType[Avatar] = MappedColumnType.base[Avatar, String](
     e => e.toString,
-    s => Avatar.withName(s)
+    s => Avatar(s)
   )
   implicit val userLocationMapping: TypedType[UserLocation] = MappedColumnType.base[UserLocation, String](
     userLocation => s"${userLocation.lat},${userLocation.long}",

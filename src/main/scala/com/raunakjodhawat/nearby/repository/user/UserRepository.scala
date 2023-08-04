@@ -56,8 +56,8 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
       case Some(user) => {
         val userCopy = user.copy(secret = None,
                                  updated_at = Some(new Date()),
-                                 status = Some(UserStatus.ACTIVE),
-                                 login_status = Some(UserLoginStatus.LOGGED_IN)
+                                 status = Some(UserStatus("ACTIVE")),
+                                 login_status = Some(UserLoginStatus("LOGGED_IN"))
         )
         ZIO.fromFuture { ex =>
           db.run(users.filter(_.id === id).update(userCopy))
