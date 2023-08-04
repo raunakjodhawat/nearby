@@ -71,10 +71,31 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     _ <- ZIO.from(db.close())
   } yield copyResult
 
-  def updateUser(user: User, id: Long): ZIO[Database, Throwable, User] = {
-    val userCopy = user.copy(id = Some(id), updated_at = Some(new Date()))
+  // if incoming user object has a property, use that otherwise use the one from the database
+  private def modifyIfIncomingValueExists[T](newValue: Option[T], dbValue: Option[T]): Option[T] = newValue match {
+    case Some(v) => Some(v)
+    case None    => dbValue
+  }
+  def updateUser(incomingUser: User, id: Long): ZIO[Database, Throwable, User] = {
     for {
       db <- dbZIO
+      userFromDB <- getUserById(id)
+      userCopy = incomingUser.copy(
+        id = Some(id),
+        secret = modifyIfIncomingValueExists(incomingUser.secret, userFromDB.secret),
+        phone = modifyIfIncomingValueExists(incomingUser.phone, userFromDB.phone),
+        address = modifyIfIncomingValueExists(incomingUser.address, userFromDB.address),
+        city = modifyIfIncomingValueExists(incomingUser.city, userFromDB.city),
+        state = modifyIfIncomingValueExists(incomingUser.state, userFromDB.state),
+        country = modifyIfIncomingValueExists(incomingUser.country, userFromDB.country),
+        pincode = modifyIfIncomingValueExists(incomingUser.pincode, userFromDB.pincode),
+        location = modifyIfIncomingValueExists(incomingUser.location, userFromDB.location),
+        created_at = userFromDB.created_at,
+        updated_at = Some(new Date()),
+        status = modifyIfIncomingValueExists(incomingUser.status, userFromDB.status),
+        login_status = modifyIfIncomingValueExists(incomingUser.login_status, userFromDB.login_status),
+        avatar = modifyIfIncomingValueExists(incomingUser.avatar, userFromDB.avatar)
+      )
       updateResultCount <- ZIO.fromFuture { ex => db.run(users.filter(_.id === id).update(userCopy)) }
       updateResult <-
         if (updateResultCount == 1) ZIO.succeed(userCopy)
