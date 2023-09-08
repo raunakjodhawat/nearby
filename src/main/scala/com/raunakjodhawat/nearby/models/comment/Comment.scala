@@ -13,5 +13,5 @@ case class Comment(
   user_id: Long,
   post_content: Option[PostContent],
   created_at: Option[Date] = Some(new Date()),
-  updated_at: Option[Date]
+  updated_at: Option[Date] = Some(new Date())
 )

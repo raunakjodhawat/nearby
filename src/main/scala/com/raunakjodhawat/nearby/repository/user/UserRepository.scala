@@ -47,10 +47,10 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
       _ <- ZIO.from(db.close())
     } yield updationResults
 
-  def verifyUser(id: Long, secret: String): ZIO[Database, Throwable, String] = for {
+  def verifyUser(id: Long, newSecret: String): ZIO[Database, Throwable, String] = for {
     db <- dbZIO
     getUserFromFromDB <- ZIO.fromFuture { ex =>
-      db.run(users.filter(x => x.id === id && x.secret === secret).result.headOption)
+      db.run(users.filter(x => x.id === id && x.secret === newSecret).result.headOption)
     }
     copyResultCount <- getUserFromFromDB match {
       case Some(user) => {

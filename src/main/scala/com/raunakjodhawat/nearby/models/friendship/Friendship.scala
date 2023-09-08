@@ -12,5 +12,5 @@ case class Friendship(
   to_user: Long,
   status: Option[FriendshipStatus],
   created_at: Option[Date] = Some(new Date()),
-  updated_at: Option[Date]
+  updated_at: Option[Date] = Some(new Date())
 )

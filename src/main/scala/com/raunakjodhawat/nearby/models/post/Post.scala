@@ -8,5 +8,5 @@ case class Post(
   title: String,
   content: Option[String],
   created_at: Option[Date] = Some(new Date()),
-  updated_at: Option[Date]
+  updated_at: Option[Date] = Some(new Date())
 )

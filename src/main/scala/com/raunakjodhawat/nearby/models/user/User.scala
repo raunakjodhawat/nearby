@@ -19,7 +19,7 @@ case class User(
   phone: Option[String],
   location: Option[UserLocation],
   created_at: Option[Date] = Some(new Date()),
-  updated_at: Option[Date],
+  updated_at: Option[Date] = Some(new Date()),
   status: Option[UserStatus] = Some(UserStatus("INACTIVE")),
   login_status: Option[UserLoginStatus] = Some(UserLoginStatus("PENDING_ACTIVATION")),
   avatar: Option[Avatar] = Some(Avatar("AV_1"))
