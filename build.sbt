@@ -1,31 +1,30 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "2.13.10"
+ThisBuild / scalaVersion := "3.3.1"
 
 lazy val root = (project in file("."))
   .settings(
     name := "nearby"
   )
+val zioVersion = "2.0.16"
+val zioHttpVersion = "3.0.0-RC2"
+val slickVersion = "3.5.0-M4"
 val circeVersion = "0.14.5"
 libraryDependencies ++= Seq(
-  "dev.zio" %% "zio" % "2.0.15",
-  "dev.zio" %% "zio-http" % "3.0.0-RC2",
-  "com.typesafe.slick" %% "slick" % "3.4.1",
-  "com.typesafe.slick" %% "slick-hikaricp" % "3.4.1",
-  "com.github.tminglei" %% "slick-pg" % "0.21.1",
-  "com.github.tminglei" %% "slick-pg_play-json" % "0.21.1",
+  "dev.zio" %% "zio" % zioVersion,
+  "dev.zio" %% "zio-http" % zioHttpVersion,
+  "com.typesafe.slick" %% "slick" % slickVersion,
+  "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
   "org.postgresql" % "postgresql" % "42.5.4",
   // email
   "com.github.daddykotex" %% "courier" % "3.2.0",
   // jwt token
   "com.github.jwt-scala" %% "jwt-zio-json" % "9.4.0",
-  // Scala test
-  "org.scalamock" %% "scalamock" % "5.2.0" % Test,
   // zio test
-  "dev.zio" %% "zio-test" % "2.0.15" % Test,
-  "dev.zio" %% "zio-test-sbt" % "2.0.15" % Test,
-  "dev.zio" %% "zio-test-magnolia" % "2.0.15" % Test,
-  "dev.zio" %% "zio-test-junit" % "2.0.15" % "test",
+  "dev.zio" %% "zio-test" % zioVersion % Test,
+  "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
+  "dev.zio" %% "zio-test-magnolia" % zioVersion % Test,
+  "dev.zio" %% "zio-test-junit" % zioVersion % "test",
   "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
   "org.scalatest" %% "scalatest" % "3.2.15" % Test,
   "org.scalatestplus" %% "junit-4-13" % "3.2.15.0" % Test,

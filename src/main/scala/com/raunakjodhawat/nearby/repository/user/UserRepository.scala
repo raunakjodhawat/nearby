@@ -47,10 +47,10 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
       _ <- ZIO.from(db.close())
     } yield updationResults
 
-  def verifyUser(id: Long, secret: String): ZIO[Database, Throwable, String] = for {
+  def verifyUser(id: Long, newSecret: String): ZIO[Database, Throwable, String] = for {
     db <- dbZIO
     getUserFromFromDB <- ZIO.fromFuture { ex =>
-      db.run(users.filter(x => x.id === id && x.secret === secret).result.headOption)
+      db.run(users.filter(x => x.id === id && x.secret === newSecret).result.headOption)
     }
     copyResultCount <- getUserFromFromDB match {
       case Some(user) => {
@@ -81,14 +81,9 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
       db <- dbZIO
       userFromDB <- getUserById(id)
       userCopy = incomingUser.copy(
-        id = Some(id),
+        id = id,
         secret = modifyIfIncomingValueExists(incomingUser.secret, userFromDB.secret),
         phone = modifyIfIncomingValueExists(incomingUser.phone, userFromDB.phone),
-        address = modifyIfIncomingValueExists(incomingUser.address, userFromDB.address),
-        city = modifyIfIncomingValueExists(incomingUser.city, userFromDB.city),
-        state = modifyIfIncomingValueExists(incomingUser.state, userFromDB.state),
-        country = modifyIfIncomingValueExists(incomingUser.country, userFromDB.country),
-        pincode = modifyIfIncomingValueExists(incomingUser.pincode, userFromDB.pincode),
         location = modifyIfIncomingValueExists(incomingUser.location, userFromDB.location),
         created_at = userFromDB.created_at,
         updated_at = Some(new Date()),

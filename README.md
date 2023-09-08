@@ -1,6 +1,6 @@
 # Social Network nearby
 ## Description
-Nearby is a Social Networking site built with of [ZIO](https://zio.dev) + [Scala](https://www.scala-lang.org) + [Postgres](https://www.postgresql.org) using [Slick](https://scala-slick.org)
+Nearby is a Social Networking site built with of [ZIO](https://zio.dev) + [Scala - 3.3.1](https://www.scala-lang.org) + [Postgres](https://www.postgresql.org) using [Slick](https://scala-slick.org)
 
 It enables you to connect with people near you, get there services, see relevant ads based on location and much more.
 
@@ -31,7 +31,7 @@ mailerPassword= (password of your mailgun account)
 2. Create nearby_test database with user nearby_test and password nearby_test
 3. Run `source env.test && sbt test` in the root directory of the project
 4. It's always a good idea to have maximum code coverage. To check code coverage run `sbt coverage +test +coverageReport` in the root directory of the project.
-5. Coverage report can be found at `target/scala-2.13/scoverage-report/index.html`
+5. Coverage report can be found at `target/scala-3.3.1/scoverage-report/index.html`
 
 ## Tech Stack
 1. [ZIO](https://zio.dev) - A type-safe, composable library for async and concurrent programming in Scala
