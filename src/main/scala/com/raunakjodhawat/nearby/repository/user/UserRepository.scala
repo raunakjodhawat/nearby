@@ -81,7 +81,7 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
       db <- dbZIO
       userFromDB <- getUserById(id)
       userCopy = incomingUser.copy(
-        id = Some(id),
+        id = id,
         secret = modifyIfIncomingValueExists(incomingUser.secret, userFromDB.secret),
         phone = modifyIfIncomingValueExists(incomingUser.phone, userFromDB.phone),
         location = modifyIfIncomingValueExists(incomingUser.location, userFromDB.location),

@@ -1,12 +1,10 @@
 package com.raunakjodhawat.nearby.models.comment
 
-import slick.lifted.ProvenShape
-
 import java.util.Date
 
 case class PostContent(
   title: String,
-  content: String
+  content: Option[String]
 )
 
 case class Comment(

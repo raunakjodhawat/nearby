@@ -9,7 +9,7 @@ case class Avatar(name: String)
 case class UserLocation(lat: Double, long: Double)
 case class UserName(firstName: String, lastName: String)
 case class User(
-  id: Option[Long],
+  id: Long,
   username: String,
   password: String,
   secret: Option[String],

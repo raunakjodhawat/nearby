@@ -15,8 +15,6 @@ libraryDependencies ++= Seq(
   "dev.zio" %% "zio-http" % zioHttpVersion,
   "com.typesafe.slick" %% "slick" % slickVersion,
   "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
-  "dev.zio" %% "izumi-reflect" % "2.3.6",
-  "org.typelevel" %% "cats-core" % "2.10.0",
   "org.postgresql" % "postgresql" % "42.5.4",
   // email
   "com.github.daddykotex" %% "courier" % "3.2.0",

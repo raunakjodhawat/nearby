@@ -33,7 +33,7 @@ object UsersTable {
 }
 class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
   import UsersTable._
-  def id = column[Option[Long]]("ID", O.PrimaryKey, O.AutoInc)
+  def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
   def username = column[String]("USERNAME", O.Unique, O.Length(32))
   def password = column[String]("PASSWORD", O.Length(32))
   def secret = column[Option[String]]("SECRET", O.Length(36))
