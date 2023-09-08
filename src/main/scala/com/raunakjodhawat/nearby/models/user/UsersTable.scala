@@ -39,11 +39,9 @@ class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
   def secret = column[Option[String]]("SECRET", O.Length(36))
   def email = column[String]("EMAIL", O.Unique, O.Length(64))
   def phone = column[Option[String]]("PHONE", O.Length(16))
-  def address = column[Option[String]]("ADDRESS", O.Length(32))
-  def city = column[Option[String]]("CITY", O.Length(32))
-  def state = column[Option[String]]("STATE", O.Length(32))
-  def country = column[Option[String]]("COUNTRY", O.Length(32))
-  def pincode = column[Option[String]]("PINCODE", O.Length(16))
+  def name = column[Option[String]]("SNAME", O.Length(32))
+  def bio = column[Option[String]]("BIO", O.Length(255))
+
   def location = column[Option[UserLocation]]("LOCATION")
   def created_at = column[Option[Date]]("CREATED_AT")
   def updated_at = column[Option[Date]]("UPDATED_AT")
@@ -57,17 +55,15 @@ class UsersTable(tag: Tag) extends Table[User](tag, "USERS") {
      password,
      secret,
      email,
+     name,
+     bio,
      phone,
-     address,
-     city,
-     state,
-     country,
-     pincode,
      location,
      created_at,
      updated_at,
      status,
      login_status,
      avatar
-    ) <> (User.tupled, User.unapply)
+    )
+      .mapTo[User]
 }
