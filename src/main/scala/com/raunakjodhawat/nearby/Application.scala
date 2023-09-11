@@ -26,17 +26,17 @@ object databaseConfiguration {
         db.run(
           DBIO.seq(
             users.schema.dropIfExists,
-            users.schema.createIfNotExists,
+            users.schema.create,
             posts.schema.dropIfExists,
-            posts.schema.createIfNotExists,
+            posts.schema.create,
             comments.schema.dropIfExists,
-            comments.schema.createIfNotExists,
+            comments.schema.create,
             likes.schema.dropIfExists,
-            likes.schema.createIfNotExists,
+            likes.schema.create,
             friendships.schema.dropIfExists,
-            friendships.schema.createIfNotExists,
+            friendships.schema.create,
             groups.schema.dropIfExists,
-            groups.schema.createIfNotExists
+            groups.schema.create
           )
         )
       }
