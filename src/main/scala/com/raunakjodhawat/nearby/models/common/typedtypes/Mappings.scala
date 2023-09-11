@@ -6,7 +6,7 @@ import slick.ast.TypedType
 import slick.jdbc.PostgresProfile.api.*
 
 object Mappings {
-  val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+  private val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
   val break = "<--break-->"
   given dateMapping: TypedType[Date] = MappedColumnType.base[Date, String](
