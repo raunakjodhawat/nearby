@@ -1,5 +1,6 @@
 package com.raunakjodhawat.nearby.models.comment
 
+import com.raunakjodhawat.nearby.models.common.typedtypes.Mappings.break
 import com.raunakjodhawat.nearby.models.post.PostsTable
 import com.raunakjodhawat.nearby.models.user.UsersTable
 
@@ -10,10 +11,13 @@ import slick.lifted.{ProvenShape, Tag}
 
 object CommentsTable {
   given postContentTypedType: TypedType[PostContent] = MappedColumnType.base[PostContent, String](
-    e => e.toString,
+    {
+      case PostContent(title, Some(content)) => s"$title$break$content"
+      case PostContent(title, None)          => s"$title"
+    },
     str => {
-      val parts = str.split(",")
-      PostContent(parts(0), if (parts.length > 1) Some(parts(1)) else None)
+      val parts = str.split(break)
+      PostContent(parts(0).strip(), if (parts.length > 1) Some(parts(1).strip()) else None)
     }
   )
 }

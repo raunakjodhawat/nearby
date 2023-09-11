@@ -9,17 +9,14 @@ object UserSpec {
   val dateLong: Long = 1690788936
   val date: Date = new Date(dateLong)
   val user: User = User(
-    Some(1L),
+    1L,
     "username",
     "user123",
     Some("secret"),
     "email",
+    Some("name"),
+    Some("bio"),
     Some("phone"),
-    Some("address"),
-    Some("city"),
-    Some("state"),
-    Some("country"),
-    Some("zip"),
     Some(UserLocation(2.3, 4.5)),
     Some(date),
     Some(date),
