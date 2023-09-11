@@ -16,17 +16,14 @@ object UserRepositorySpec {
   val userRepository = new UserRepository(dbZIO)
   val users = UserRepository.users
   val testUser: User = User(
-    Some(1L),
+    1L,
     "username",
-    "user123",
+    "password",
     Some("secret"),
     "email",
+    Some("name"),
+    Some("bio"),
     Some("phone"),
-    Some("address"),
-    Some("city"),
-    Some("state"),
-    Some("country"),
-    Some("zip"),
     Some(UserLocation(2.3, 4.5)),
     Some(new java.util.Date()),
     Some(new java.util.Date()),
@@ -58,7 +55,7 @@ object UserRepositorySpec {
     uuid <- Random.nextUUID
     _ <- TestRandom.feedUUIDs(uuid)
     _ <- userRepository.createUser(testUser)
-    findUserZIO <- userRepository.getUserById(testUser.id.get)
+    findUserZIO <- userRepository.getUserById(testUser.id)
   } yield {
     findUserZIO.copy(
       created_at = Some(currentDate),

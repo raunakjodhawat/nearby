@@ -40,17 +40,14 @@ object JsonEncoderDecoderSpec {
   val userLoginStatusDecodeJSON: Decoder.Result[UserLoginStatus] = userLoginStatusEncodeJSON.as[UserLoginStatus]
 
   val user: User = User(
-    Some(1L),
+    1L,
     "username",
     "user123",
     Some("secret"),
     "email",
+    Some("name"),
+    Some("bio"),
     Some("phone"),
-    Some("address"),
-    Some("city"),
-    Some("state"),
-    Some("country"),
-    Some("zip"),
     Some(UserLocation(2.3, 4.5)),
     Some(date),
     Some(date),

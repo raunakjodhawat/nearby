@@ -14,7 +14,7 @@ case class User(
   password: String,
   secret: Option[String],
   email: String,
-  name: Option[UserName],
+  name: Option[String],
   bio: Option[String],
   phone: Option[String],
   location: Option[UserLocation],
