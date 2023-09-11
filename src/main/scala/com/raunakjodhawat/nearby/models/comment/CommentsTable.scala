@@ -16,7 +16,6 @@ object CommentsTable {
       case PostContent(title, None)          => s"$title"
     },
     str => {
-      println(s"incoming $str")
       val parts = str.split(break)
       PostContent(parts(0).strip(), if (parts.length > 1) Some(parts(1).strip()) else None)
     }
