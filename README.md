@@ -21,10 +21,8 @@ mailerPassword= (password of your mailgun account)
 
 ## Running test
 ### With Docker
-`source .env.test && sbt test` is containerized. Hence, it requires docker to be installed on your machine.
 1. chmod +x ./scripts/runTests.sh
 2. ./scripts/runTests.sh
-
 
 ### On Local
 1. Run postgres on your machine

@@ -16,6 +16,8 @@ services:
       - ./db:/var/lib/postgresql/data
   api:
     build: .
+    env_file:
+      - .env.test
     depends_on:
       - db
     ports:
