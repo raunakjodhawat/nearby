@@ -4,4 +4,4 @@ WORKDIR /app
 COPY . .
 COPY build.sbt .
 EXPOSE 8080
-CMD sbt coverage +test +coverageReport
+CMD sbt test

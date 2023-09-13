@@ -20,14 +20,14 @@ mailerPassword= (password of your mailgun account)
 7. Enjoy!
 
 ## Running test
-### With Docker
+### With DB on Docker 
 1. chmod +x ./scripts/runTests.sh
 2. ./scripts/runTests.sh
 
-### On Local
+### On Local Test DB
 1. Run postgres on your machine
-2. Create nearby_test database with user nearby_test and password nearby_test
-3. Run `source env.test && sbt test` in the root directory of the project
+2. Create `nearby_test` database with user `nearby_test` and password `nearby_test`
+3. Run `sbt test` in the root directory of the project
 4. It's always a good idea to have maximum code coverage. To check code coverage run `sbt coverage +test +coverageReport` in the root directory of the project.
 5. Coverage report can be found at `target/scala-3.3.1/scoverage-report/index.html`
 
