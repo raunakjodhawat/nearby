@@ -9,11 +9,11 @@ object JsonEncoderDecoder {
   implicit val encodeDate: Encoder[Date] = Encoder.encodeString.contramap[Date](_.getTime.toString)
   implicit val decodeDate: Decoder[Date] = Decoder.decodeString.map(s => new Date(s.toLong))
 
+  implicit val avatarEncoder: Encoder[Avatar] = deriveEncoder[Avatar]
+  implicit val avatarDecoder: Decoder[Avatar] = deriveDecoder[Avatar]
+
   implicit val encodeUserLocation: Encoder[UserLocation] = deriveEncoder[UserLocation]
   implicit val decodeUserLocation: Decoder[UserLocation] = deriveDecoder[UserLocation]
-
-  implicit lazy val avatarEncoder: Encoder[Avatar] = deriveEncoder[Avatar]
-  implicit val avatarDecoder: Decoder[Avatar] = deriveDecoder[Avatar]
 
   implicit val userStatusEncoder: Encoder[UserStatus] = deriveEncoder[UserStatus]
   implicit val userStatusDecoder: Decoder[UserStatus] = deriveDecoder[UserStatus]

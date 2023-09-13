@@ -1,7 +1,8 @@
 package com.raunakjodhawat.nearby.models.comment
 
+import org.junit.runner.RunWith
 import zio.test.*
-import zio.test.junit.JUnitRunnableSpec
+import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
 
 import java.util.Date
 
@@ -20,6 +21,7 @@ object CommentSpec {
     Some(date)
   )
 }
+@RunWith(classOf[ZTestJUnitRunner])
 class CommentSpec extends JUnitRunnableSpec {
   import CommentSpec._
   def spec = suite("Comments")(

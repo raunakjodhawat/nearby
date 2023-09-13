@@ -1,14 +1,16 @@
 package com.raunakjodhawat.nearby.models.comment
 
+import com.raunakjodhawat.nearby.clearDB
 import com.raunakjodhawat.nearby.models.post.{Post, PostsTable}
 import com.raunakjodhawat.nearby.models.user.{User, UsersTable}
+import org.junit.runner.RunWith
 import slick.ast.TypedType
 import slick.jdbc.PostgresProfile.api.*
 import slick.dbio.DBIO
 import zio.*
 import zio.test.*
 import zio.test.Assertion.*
-import zio.test.junit.JUnitRunnableSpec
+import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
 
 import java.util.Date
 import scala.util.Properties
@@ -21,6 +23,8 @@ object CommentsTableSpec {
   val dateLong: Long = 1690788936
   val date: Date = new Date(dateLong)
 }
+
+@RunWith(classOf[ZTestJUnitRunner])
 class CommentsTableSpec extends JUnitRunnableSpec {
   import CommentsTableSpec._
 
@@ -28,17 +32,11 @@ class CommentsTableSpec extends JUnitRunnableSpec {
     val user: User = User(id = 1L, username = "raunak", password = "sha-256", email = "raunakjodhawat@gmail.com")
     val post: Post = Post(id = 1L, user_id = 1L, title = "My First Post", content = Some("Some image url"))
     for {
-      db <- dbZIO
+      db <- clearDB()
       dbCreationFuture <- ZIO.fromFuture { ex =>
         {
           db.run(
             DBIO.seq(
-              comments.schema.dropIfExists,
-              posts.schema.dropIfExists,
-              users.schema.dropIfExists,
-              users.schema.create,
-              posts.schema.create,
-              comments.schema.create,
               users += user,
               posts += post
             )
@@ -73,8 +71,7 @@ class CommentsTableSpec extends JUnitRunnableSpec {
                                               updated_at = Some(date)
       )
       val commentsZIO = for {
-        a <- clearAndCreateCommentsTableZIO.fork
-        _ <- a.join
+        _ <- clearAndCreateCommentsTableZIO
         db <- dbZIO
         addingComments <- ZIO.fromFuture { ex =>
           db.run(

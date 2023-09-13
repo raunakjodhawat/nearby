@@ -1,8 +1,12 @@
 package com.raunakjodhawat
 
 import com.raunakjodhawat.nearby.models.comment.CommentsTable
+import com.raunakjodhawat.nearby.models.common.typedtypes.Mappings.dateToString
 import com.raunakjodhawat.nearby.models.post.PostsTable
 import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserStatus, UsersTable}
+import io.circe.Encoder.*
+import io.circe.{Json, JsonNumber, JsonObject}
+import io.circe.Encoder.encodeJsonObject
 import slick.jdbc
 import slick.jdbc.PostgresProfile
 import zio.{Task, ZIO}
@@ -42,6 +46,23 @@ package object nearby {
     } yield db
   }
 
+  def testUserJson(created_at: Date = test_date, updated_at: Date = test_date) = JsonObject(
+    "id" -> Json.fromLong(1L),
+    "username" -> Json.fromString("username"),
+    "password" -> Json.fromString("password"),
+    "secret" -> Json.fromString("secret"),
+    "email" -> Json.fromString("email"),
+    "name" -> Json.fromString("name"),
+    "bio" -> Json.fromString("bio"),
+    "phone" -> Json.fromString("phone"),
+    "location" -> Json.fromJsonObject(
+      JsonObject("lat" -> Json.fromBigDecimal(2.3), "long" -> Json.fromBigDecimal(4.5))
+    ),
+    "created_at" -> Json.fromString(dateToString(test_date)),
+    "updated_at" -> Json.fromString(dateToString(test_date)),
+    "user_status" -> Json.fromString("ACTIVE"),
+    "avatar" -> Json.fromString("AV_1")
+  )
   def testUser(created_at: Date = test_date, updated_at: Date = test_date): User = User(
     1L,
     "username",

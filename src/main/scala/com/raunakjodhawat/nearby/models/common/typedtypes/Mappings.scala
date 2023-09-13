@@ -8,6 +8,8 @@ import slick.jdbc.PostgresProfile.api.*
 object Mappings {
   private val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
+  val dateToString: Date => String = sdf.format
+
   val break = "<--break-->"
   given dateMapping: TypedType[Date] = MappedColumnType.base[Date, String](
     date => sdf.format(date),
