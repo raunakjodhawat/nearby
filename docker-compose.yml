@@ -19,7 +19,7 @@ services:
     env_file:
       - .env.test
     environment:
-      - DBPATH = postgres-test-docker
+      - DBPATH=postgres-test-docker
     depends_on:
       - db
     ports:
