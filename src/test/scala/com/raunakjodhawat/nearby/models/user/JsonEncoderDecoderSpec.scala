@@ -24,20 +24,15 @@ object JsonEncoderDecoderSpec {
   val userLocationDecodeJSON: Decoder.Result[UserLocation] =
     userLocationEncodeJSON.as[UserLocation]
 
-  val userAvatar: Avatar = Avatar("AV_1")
+  val userAvatar: Avatar = Avatar.AV_1
   val userAvatarString: String = "{\"name\": \"AV_1\"}"
   val avatarEncodeJSON: Json = userAvatar.asJson
   val avatarDecodeJSON: Decoder.Result[Avatar] = avatarEncodeJSON.as[Avatar]
 
-  val userStatus: UserStatus = UserStatus("ACTIVE")
+  val userStatus: UserStatus = UserStatus.ACTIVE
   val userStatusString: String = "{\"name\": \"ACTIVE\"}"
   val userStatusEncodeJSON: Json = userStatus.asJson
   val userStatusDecodeJSON: Decoder.Result[UserStatus] = userStatusEncodeJSON.as[UserStatus]
-
-  val userLoginStatus: UserLoginStatus = UserLoginStatus("LOGGED_IN")
-  val userLoginStatusString: String = "{\"name\": \"LOGGED_IN\"}"
-  val userLoginStatusEncodeJSON: Json = userLoginStatus.asJson
-  val userLoginStatusDecodeJSON: Decoder.Result[UserLoginStatus] = userLoginStatusEncodeJSON.as[UserLoginStatus]
 
   val user: User = User(
     1L,
@@ -51,9 +46,8 @@ object JsonEncoderDecoderSpec {
     Some(UserLocation(2.3, 4.5)),
     Some(date),
     Some(date),
-    Some(UserStatus("ACTIVE")),
-    Some(UserLoginStatus("LOGGED_IN")),
-    Some(Avatar("AV_1"))
+    Some(UserStatus.ACTIVE),
+    Some(Avatar.AV_1)
   )
   val userEncodeJSON: Json = user.asJson
   val userString: String =
@@ -122,14 +116,6 @@ class JsonEncoderDecoderSpec extends JUnitRunnableSpec {
       },
       test("decoding") {
         assert(userStatusDecodeJSON)(Assertion.equalTo(Right(userStatus)))
-      }
-    ),
-    suite("user login status")(
-      test("encoding") {
-        parse(userLoginStatusString).map(x => assert(userLoginStatusEncodeJSON)(Assertion.equalTo(x)))
-      },
-      test("decoding") {
-        assert(userLoginStatusDecodeJSON)(Assertion.equalTo(Right(userLoginStatus)))
       }
     ),
     suite("user")(

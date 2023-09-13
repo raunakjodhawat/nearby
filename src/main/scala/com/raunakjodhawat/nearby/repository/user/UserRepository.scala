@@ -1,6 +1,6 @@
 package com.raunakjodhawat.nearby.repository.user
 
-import com.raunakjodhawat.nearby.models.user.{User, UserLoginStatus, UserStatus, UsersTable}
+import com.raunakjodhawat.nearby.models.user.{User, UserStatus, UsersTable}
 import com.raunakjodhawat.nearby.utils.Utils.secretKey
 
 import slick.jdbc.PostgresProfile.api._
@@ -54,11 +54,7 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     }
     copyResultCount <- getUserFromFromDB match {
       case Some(user) => {
-        val userCopy = user.copy(secret = None,
-                                 updated_at = Some(new Date()),
-                                 status = Some(UserStatus("ACTIVE")),
-                                 login_status = Some(UserLoginStatus("LOGGED_IN"))
-        )
+        val userCopy = user.copy(secret = None, updated_at = Some(new Date()), user_status = Some(UserStatus.ACTIVE))
         ZIO.fromFuture { ex =>
           db.run(users.filter(_.id === id).update(userCopy))
         }
@@ -87,8 +83,7 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
         location = modifyIfIncomingValueExists(incomingUser.location, userFromDB.location),
         created_at = userFromDB.created_at,
         updated_at = Some(new Date()),
-        status = modifyIfIncomingValueExists(incomingUser.status, userFromDB.status),
-        login_status = modifyIfIncomingValueExists(incomingUser.login_status, userFromDB.login_status),
+        user_status = modifyIfIncomingValueExists(incomingUser.user_status, userFromDB.user_status),
         avatar = modifyIfIncomingValueExists(incomingUser.avatar, userFromDB.avatar)
       )
       updateResultCount <- ZIO.fromFuture { ex => db.run(users.filter(_.id === id).update(userCopy)) }

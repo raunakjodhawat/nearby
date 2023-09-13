@@ -15,9 +15,6 @@ object JsonEncoderDecoder {
   implicit lazy val avatarEncoder: Encoder[Avatar] = deriveEncoder[Avatar]
   implicit val avatarDecoder: Decoder[Avatar] = deriveDecoder[Avatar]
 
-  implicit val loginStatusEncoder: Encoder[UserLoginStatus] = deriveEncoder[UserLoginStatus]
-  implicit val loginStatusDecoder: Decoder[UserLoginStatus] = deriveDecoder[UserLoginStatus]
-
   implicit val userStatusEncoder: Encoder[UserStatus] = deriveEncoder[UserStatus]
   implicit val userStatusDecoder: Decoder[UserStatus] = deriveDecoder[UserStatus]
 
