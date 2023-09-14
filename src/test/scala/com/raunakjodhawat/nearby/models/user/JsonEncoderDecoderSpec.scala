@@ -1,14 +1,12 @@
 package com.raunakjodhawat.nearby.models.user
 
 import com.raunakjodhawat.nearby.models.user.JsonEncoderDecoder.*
-import com.raunakjodhawat.nearby.{testUser, testUserJson}
+import com.raunakjodhawat.nearby.testUser
 import io.circe.*
 import io.circe.parser.*
-import io.circe.generic.semiauto.*
 import io.circe.syntax.EncoderOps
 import org.junit.runner.RunWith
 
-import java.util.Date
 import zio.Scope
 import zio.test.{Spec, TestEnvironment}
 import zio.test.*
@@ -21,9 +19,30 @@ object JsonEncoderDecoderSpec {
   val userLocationDecodeJSON: Decoder.Result[UserLocation] =
     userLocationEncodeJSON.as[UserLocation]
 
-  val userEncodeJSON: Json = testUser().asJson
-  val userStringInJson: JsonObject = testUserJson()
-  val userDecodeJson: Decoder.Result[User] = userEncodeJSON.as[User]
+  val test_user: User = testUser()
+  val test_user_json: Json = test_user.asJson
+  val test_user_json_string: String =
+    """
+      |{
+      |  "id" : 1,
+      |  "username" : "username",
+      |  "password" : "password",
+      |  "secret" : "secret",
+      |  "email" : "email",
+      |  "name" : "name",
+      |  "bio" : "bio",
+      |  "phone" : "phone",
+      |  "location" : {
+      |    "lat" : 2.3,
+      |    "long" : 4.5
+      |  },
+      |  "created_at" : "1690788936",
+      |  "updated_at" : "1690788936",
+      |  "user_status" : "ACTIVE",
+      |  "avatar" : "AV_1"
+      |}
+      |""".stripMargin
+  val test_user_decoder_json: Decoder.Result[User] = test_user_json.as[User]
 
 }
 @RunWith(classOf[ZTestJUnitRunner])
@@ -70,13 +89,10 @@ class JsonEncoderDecoderSpec extends JUnitRunnableSpec {
     ),
     suite("user")(
       test("encoding") {
-        println(userEncodeJSON)
-        println(userStringInJson)
-        // parse(userString).map(x => assert(testUserJson())(Assertion.equalTo(x)))
-        assertTrue(true)
+        parse(test_user_json_string).map(x => assert(test_user_json)(Assertion.equalTo(x)))
       },
       test("decoding") {
-        assert(userDecodeJson)(Assertion.equalTo(Right(testUser())))
+        assert(test_user_decoder_json)(Assertion.equalTo(Right(test_user)))
       }
     )
   )
