@@ -1,143 +1,98 @@
 package com.raunakjodhawat.nearby.models.user
 
-import com.raunakjodhawat.nearby.models.user.JsonEncoderDecoder._
-import io.circe._
-import io.circe.parser._
-import io.circe.generic.semiauto._
+import com.raunakjodhawat.nearby.models.user.JsonEncoderDecoder.*
+import com.raunakjodhawat.nearby.testUser
+import io.circe.*
+import io.circe.parser.*
 import io.circe.syntax.EncoderOps
+import org.junit.runner.RunWith
 
-import java.util.Date
 import zio.Scope
 import zio.test.{Spec, TestEnvironment}
-import zio.test._
-import zio.test.junit.JUnitRunnableSpec
+import zio.test.*
+import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
 
 object JsonEncoderDecoderSpec {
-  val dateLong: Long = 1690788936
-  val date: Date = new Date(dateLong)
-  val dateEncodeJSON: Json = date.asJson
-  val dateDecodeJSON: Decoder.Result[Date] = dateEncodeJSON.as[Date]
-
-  val fakeUserLocation: UserLocation = UserLocation(100, 100)
+  val test_user_location: UserLocation = UserLocation(100, 100)
   val userLocationString: String = "{\"lat\" : 100.0,\"long\" : 100.0}"
-  val userLocationEncodeJSON: Json = fakeUserLocation.asJson
+  val userLocationEncodeJSON: Json = test_user_location.asJson
   val userLocationDecodeJSON: Decoder.Result[UserLocation] =
     userLocationEncodeJSON.as[UserLocation]
 
-  val userAvatar: Avatar = Avatar("AV_1")
-  val userAvatarString: String = "{\"name\": \"AV_1\"}"
-  val avatarEncodeJSON: Json = userAvatar.asJson
-  val avatarDecodeJSON: Decoder.Result[Avatar] = avatarEncodeJSON.as[Avatar]
-
-  val userStatus: UserStatus = UserStatus("ACTIVE")
-  val userStatusString: String = "{\"name\": \"ACTIVE\"}"
-  val userStatusEncodeJSON: Json = userStatus.asJson
-  val userStatusDecodeJSON: Decoder.Result[UserStatus] = userStatusEncodeJSON.as[UserStatus]
-
-  val userLoginStatus: UserLoginStatus = UserLoginStatus("LOGGED_IN")
-  val userLoginStatusString: String = "{\"name\": \"LOGGED_IN\"}"
-  val userLoginStatusEncodeJSON: Json = userLoginStatus.asJson
-  val userLoginStatusDecodeJSON: Decoder.Result[UserLoginStatus] = userLoginStatusEncodeJSON.as[UserLoginStatus]
-
-  val user: User = User(
-    1L,
-    "username",
-    "user123",
-    Some("secret"),
-    "email",
-    Some("name"),
-    Some("bio"),
-    Some("phone"),
-    Some(UserLocation(2.3, 4.5)),
-    Some(date),
-    Some(date),
-    Some(UserStatus("ACTIVE")),
-    Some(UserLoginStatus("LOGGED_IN")),
-    Some(Avatar("AV_1"))
-  )
-  val userEncodeJSON: Json = user.asJson
-  val userString: String =
+  val test_user: User = testUser()
+  val test_user_json: Json = test_user.asJson
+  val test_user_json_string: String =
     """
       |{
       |  "id" : 1,
       |  "username" : "username",
-      |  "password" : "user123",
+      |  "password" : "password",
       |  "secret" : "secret",
       |  "email" : "email",
+      |  "name" : "name",
+      |  "bio" : "bio",
       |  "phone" : "phone",
-      |  "address" : "address",
-      |  "city" : "city",
-      |  "state" : "state",
-      |  "country" : "country",
-      |  "pincode" : "zip",
       |  "location" : {
       |    "lat" : 2.3,
       |    "long" : 4.5
       |  },
       |  "created_at" : "1690788936",
       |  "updated_at" : "1690788936",
-      |  "status" : {
-      |    "name" : "ACTIVE"
-      |  },
-      |  "login_status" : {
-      |    "name" : "LOGGED_IN"
-      |  },
-      |  "avatar" : {
-      |    "name" : "AV_1"
-      |  }
+      |  "user_status" : "ACTIVE",
+      |  "avatar" : "AV_1"
       |}
       |""".stripMargin
-  val userDecodeJson: Decoder.Result[User] = userEncodeJSON.as[User]
+  val test_user_decoder_json: Decoder.Result[User] = test_user_json.as[User]
+
 }
+@RunWith(classOf[ZTestJUnitRunner])
 class JsonEncoderDecoderSpec extends JUnitRunnableSpec {
   import JsonEncoderDecoderSpec._
   override def spec: Spec[TestEnvironment with Scope, Any] = suite("Json Encoder Decoder")(
-    suite("Java Util Date")(
-      test("encoding") {
-        assert(dateEncodeJSON)(Assertion.equalTo("1690788936".asJson))
-      },
-      test("decoding") {
-        assert(dateDecodeJSON)(Assertion.equalTo(Right(date)))
-      }
-    ),
     suite("user location")(
       test("encoding") {
         parse(userLocationString).map(x => assert(userLocationEncodeJSON)(Assertion.equalTo(x)))
       },
       test("decoding") {
-        assert(userLocationDecodeJSON)(Assertion.equalTo(Right(fakeUserLocation)))
+        assert(userLocationDecodeJSON)(Assertion.equalTo(Right(test_user_location)))
       }
     ),
     suite("user avatar")(
       test("encoding") {
-        parse(userAvatarString).map(x => assert(avatarEncodeJSON)(Assertion.equalTo(x)))
+        assert(Avatar.AV_1.toString.asJson)(Assertion.equalTo(Json.fromString("AV_1")))
+        assert(Avatar.AV_2.toString.asJson)(Assertion.equalTo(Json.fromString("AV_2")))
+        assert(Avatar.AV_3.toString.asJson)(Assertion.equalTo(Json.fromString("AV_3")))
+        assert(Avatar.AV_4.toString.asJson)(Assertion.equalTo(Json.fromString("AV_4")))
+        assert(Avatar.AV_5.toString.asJson)(Assertion.equalTo(Json.fromString("AV_5")))
       },
       test("decoding") {
-        assert(avatarDecodeJSON)(Assertion.equalTo(Right(userAvatar)))
+        assert(Avatar.AV_1.asJson.as[Avatar])(Assertion.equalTo(Right(Avatar.AV_1)))
+        assert(Avatar.AV_2.asJson.as[Avatar])(Assertion.equalTo(Right(Avatar.AV_2)))
+        assert(Avatar.AV_3.asJson.as[Avatar])(Assertion.equalTo(Right(Avatar.AV_3)))
+        assert(Avatar.AV_4.asJson.as[Avatar])(Assertion.equalTo(Right(Avatar.AV_4)))
+        assert(Avatar.AV_5.asJson.as[Avatar])(Assertion.equalTo(Right(Avatar.AV_5)))
       }
     ),
     suite("user status")(
       test("encoding") {
-        parse(userStatusString).map(x => assert(userStatusEncodeJSON)(Assertion.equalTo(x)))
+        assert(UserStatus.ACTIVE.toString.asJson)(Assertion.equalTo(Json.fromString("ACTIVE")))
+        assert(UserStatus.INACTIVE.toString.asJson)(Assertion.equalTo(Json.fromString("INACTIVE")))
+        assert(UserStatus.PENDING_ACTIVATION.toString.asJson)(Assertion.equalTo(Json.fromString("PENDING_ACTIVATION")))
       },
       test("decoding") {
-        assert(userStatusDecodeJSON)(Assertion.equalTo(Right(userStatus)))
-      }
-    ),
-    suite("user login status")(
-      test("encoding") {
-        parse(userLoginStatusString).map(x => assert(userLoginStatusEncodeJSON)(Assertion.equalTo(x)))
-      },
-      test("decoding") {
-        assert(userLoginStatusDecodeJSON)(Assertion.equalTo(Right(userLoginStatus)))
+        assert(UserStatus.ACTIVE.asJson.as[UserStatus])(Assertion.equalTo(Right(UserStatus.ACTIVE)))
+        assert(UserStatus.INACTIVE.asJson.as[UserStatus])(Assertion.equalTo(Right(UserStatus.INACTIVE)))
+        assert(UserStatus.PENDING_ACTIVATION.asJson.as[UserStatus])(
+          Assertion.equalTo(Right(UserStatus.PENDING_ACTIVATION))
+        )
       }
     ),
     suite("user")(
       test("encoding") {
-        parse(userString).map(x => assert(userEncodeJSON)(Assertion.equalTo(x)))
+        parse(test_user_json_string).map(x => assert(test_user_json)(Assertion.equalTo(x)))
       },
       test("decoding") {
-        assert(userDecodeJson)(Assertion.equalTo(Right(user)))
+        assert(test_user_decoder_json)(Assertion.equalTo(Right(test_user)))
       }
     )
   )

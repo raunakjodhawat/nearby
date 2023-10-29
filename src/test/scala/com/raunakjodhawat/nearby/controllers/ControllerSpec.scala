@@ -1,12 +1,11 @@
 package com.raunakjodhawat.nearby.controllers
 
-import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.server.Directives.complete
-import zio.test.Assertion._
-import zio.test._
-import zio.test.akkahttp.AkkaZIOSpecDefault
+import org.junit.runner.RunWith
+import zio.test.*
+import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
 
-class ControllerSpec extends AkkaZIOSpecDefault {
+@RunWith(classOf[ZTestJUnitRunner])
+class ControllerSpec extends JUnitRunnableSpec {
   def spec =
     suite("MySpec")(
       test("my test") {

@@ -1,11 +1,12 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.3.1"
-
+ThisBuild / envFileName := ".env.test"
 lazy val root = (project in file("."))
   .settings(
     name := "nearby"
   )
+
 val zioVersion = "2.0.16"
 val zioHttpVersion = "3.0.0-RC2"
 val slickVersion = "3.5.0-M4"
@@ -37,7 +38,7 @@ libraryDependencies ++= Seq(
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
-coverageEnabled := false
+coverageEnabled := true
 // Coverage settings
 coverageHighlighting := true
 coverageFailOnMinimum := false
