@@ -3,7 +3,7 @@ package com.raunakjodhawat
 import com.raunakjodhawat.nearby.models.comment.CommentsTable
 import com.raunakjodhawat.nearby.models.common.typedtypes.Mappings.{dateToLong, dateToString}
 import com.raunakjodhawat.nearby.models.post.PostsTable
-import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserStatus, UsersTable}
+import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UsersTable}
 import io.circe.Encoder.*
 import io.circe.{Json, JsonNumber, JsonObject}
 import io.circe.Encoder.encodeJsonObject
@@ -11,6 +11,8 @@ import slick.jdbc
 import slick.jdbc.PostgresProfile
 import zio.{Task, ZIO}
 import slick.jdbc.PostgresProfile.api.*
+import zio.test.*
+import zio.test.Assertion.*
 
 import scala.util.Properties
 import java.util.Date
@@ -49,15 +51,24 @@ package object nearby {
     1L,
     "username",
     "password",
-    Some("secret"),
-    "email",
+    "secret",
+    Some("email"),
     Some("name"),
     Some("bio"),
     Some("phone"),
     Some(UserLocation(2.3, 4.5)),
     Some(created_at),
     Some(updated_at),
-    Some(UserStatus.ACTIVE),
+    false,
     Some(Avatar.AV_1)
   )
+
+  def customAssertZIO[A, B, C](zio: ZIO[A, B, C]): ZIO[A, Nothing, TestResult] = {
+    val assertionZIO = zio.fold(
+      _ => ZIO.unit,
+      _ => ZIO.fail("Assertion failed")
+    )
+
+    assertZIO(assertionZIO)(Assertion.equalTo(ZIO.unit))
+  }
 }

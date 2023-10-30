@@ -29,7 +29,7 @@ class CommentsTableSpec extends JUnitRunnableSpec {
   import CommentsTableSpec._
 
   def clearAndCreateCommentsTableZIO: ZIO[Database, Throwable, Seq[CommentsTable#TableElementType]] = {
-    val user: User = User(id = 1L, username = "raunak", password = "sha-256", email = "raunakjodhawat@gmail.com")
+    val user: User = User(id = 1L, username = "raunak", password = "sha-256", secret = "raunakjodhawat@gmail.com")
     val post: Post = Post(id = 1L, user_id = 1L, title = "My First Post", content = Some("Some image url"))
     for {
       db <- clearDB()

@@ -10,9 +10,6 @@ import zio.test.junit.{JUnitRunnableSpec, ZTestJUnitRunner}
 @RunWith(classOf[ZTestJUnitRunner])
 class UserSpec extends JUnitRunnableSpec {
   def spec = suite("Users")(
-    test("UserStatus") {
-      assert(UserStatus.ACTIVE.name)(Assertion.equalTo("ACTIVE"))
-    },
     test("Avatar") {
       assert(Avatar.AV_1.name)(Assertion.equalTo("AV_1"))
     },
