@@ -1,7 +1,6 @@
 package com.raunakjodhawat.nearby.utils
 
 import com.raunakjodhawat.nearby.utils.Utils._
-import courier._
 import org.junit.runner.RunWith
 import zio._
 import zio.test._
