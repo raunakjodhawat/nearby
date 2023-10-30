@@ -38,7 +38,7 @@ object JsonEncoderDecoderSpec {
       |  },
       |  "created_at" : "1690788936",
       |  "updated_at" : "1690788936",
-      |  "user_status" : "ACTIVE",
+      |  "activationComplete" : false,
       |  "avatar" : "AV_1"
       |}
       |""".stripMargin

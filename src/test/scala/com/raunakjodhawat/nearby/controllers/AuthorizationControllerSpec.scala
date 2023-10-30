@@ -2,11 +2,9 @@ package com.raunakjodhawat.nearby.controllers
 
 import com.raunakjodhawat.nearby.repository.user.UserRepository
 import com.raunakjodhawat.nearby.{clearDB, customAssertZIO}
-
-import com.raunakjodhawat.nearby.models.user.LoginUser
-import com.raunakjodhawat.nearby.utils.Utils.decodeAuthorizationHeader
+import com.raunakjodhawat.nearby.models.user.{LoginUser, User, UsersTable}
+import com.raunakjodhawat.nearby.utils.Utils.{decodeAuthorizationHeader, hashPassword}
 import org.junit.runner.RunWith
-
 import slick.jdbc
 import slick.jdbc.PostgresProfile
 import slick.jdbc.PostgresProfile.api.*
@@ -27,16 +25,17 @@ object AuthorizationControllerSpec {
     username = "username",
     password = "password"
   )
+  val uc = new UserController(userRepository)
   val ac = new AuthorizationController(userRepository)
 
-  def createAUser(): ZIO[Database, Throwable, Unit] = for {
+  def createAUser(): ZIO[Database, Throwable, UsersTable#TableElementType] = for {
     db <- clearDB()
     _ <- TestRandom.feedLongs(123456789L, 987654321L, 555555555L)
     uuid <- Random.nextUUID
     _ <- TestRandom.feedUUIDs(uuid)
-    _ <- userRepository.createUser(loginUser.toUser)
+    user <- userRepository.createUser(loginUser.toUser)
     _ <- ZIO.from(db.close())
-  } yield ()
+  } yield user
 }
 @RunWith(classOf[ZTestJUnitRunner])
 class AuthorizationControllerSpec extends JUnitRunnableSpec {
@@ -64,10 +63,14 @@ class AuthorizationControllerSpec extends JUnitRunnableSpec {
         customAssertZIO(zio)
       },
       test("Authorization succeeds, when username and password are both correct") {
-        val incomingHeader = Headers(("Authorization", "Basic dXNlcm5hbWU6cGFzc3dvcmQK"))
+//        val incomingHeader = Headers(("Authorization", "Basic dXNlcm5hbWU6cGFzc3dvcmQK"))
         for {
           _ <- clearDB()
-          _ <- createAUser()
+          user <- createAUser()
+          authToken <- uc.createAuthToken(loginUser.username, loginUser.password, user.secret, user.password)
+          incomingHeader = Headers(
+            ("Authorization", authToken.token)
+          )
           header = decodeAuthorizationHeader(incomingHeader)
           result <- ac.authenticateRequest(header)
         } yield {

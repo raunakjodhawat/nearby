@@ -68,7 +68,7 @@ class UserController(userRepository: UserRepository) {
       }
   }
 
-  private def createAuthToken(
+  def createAuthToken(
     username: String,
     password: String,
     secret: String,

@@ -19,7 +19,7 @@ class UserSpec extends JUnitRunnableSpec {
     test("User") {
       assert(testUser().toString)(
         Assertion.equalTo(
-          "User(1,username,password,Some(secret),email,Some(name),Some(bio),Some(phone),Some(UserLocation(2.3,4.5)),Some(Tue Jan 20 19:09:48 IST 1970),Some(Tue Jan 20 19:09:48 IST 1970),Some(ACTIVE),Some(AV_1))"
+          "User(1,username,password,secret,Some(email),Some(name),Some(bio),Some(phone),Some(UserLocation(2.3,4.5)),Some(Tue Jan 20 19:09:48 IST 1970),Some(Tue Jan 20 19:09:48 IST 1970),false,Some(AV_1))"
         )
       )
     }
