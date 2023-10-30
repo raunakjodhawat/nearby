@@ -35,7 +35,16 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     case None       => ZIO.fail(new Exception("unable to find the user"))
   }
 
-  def createUser(user: User): ZIO[Database, Throwable, Unit] =
+  def getOrCreateUser(user: User): ZIO[Database, Throwable, UsersTable#TableElementType] = for {
+    db <- dbZIO
+    userFromDB <- getUserByUsername(user.username)
+    userFromDBOrCreated <- userFromDB match {
+      case Some(user) => ZIO.succeed(user)
+      case None       => createUser(user)
+    }
+    _ <- ZIO.from(db.close())
+  } yield userFromDBOrCreated
+  def createUser(user: User): ZIO[Database, Throwable, UsersTable#TableElementType] =
     for {
       db <- dbZIO
       updatedUserFutureZIO <- ZIO.fromFuture { ex =>
@@ -43,11 +52,11 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
           users += user.copy(created_at = Some(new Date()), updated_at = Some(new Date()))
         )
       }
+      user <-
+        if (updatedUserFutureZIO == 1) ZIO.succeed(user)
+        else ZIO.fail(new Exception("Error creating user"))
       _ <- ZIO.from(db.close())
-    } yield {
-      if (updatedUserFutureZIO == 1) ZIO.succeed(())
-      else ZIO.fail(new Exception("Error creating user"))
-    }
+    } yield user
 
   def verifyUser(id: Long, newSecret: String): ZIO[Database, Throwable, String] = for {
     db <- dbZIO

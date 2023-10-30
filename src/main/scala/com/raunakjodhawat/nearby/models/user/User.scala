@@ -43,3 +43,7 @@ case class LoginUser(
     )
   }
 }
+
+case class LoginResponse(
+  token: String
+)

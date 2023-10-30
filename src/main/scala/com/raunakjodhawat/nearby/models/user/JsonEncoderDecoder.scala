@@ -19,4 +19,7 @@ object JsonEncoderDecoder {
 
   implicit val loginUserEncoder: Encoder[LoginUser] = deriveEncoder[LoginUser]
   implicit val loginUserDecoder: Decoder[LoginUser] = deriveDecoder[LoginUser]
+
+  implicit val loginResponseEncoder: Encoder[LoginResponse] = deriveEncoder[LoginResponse]
+  implicit val loginResponseDecoder: Decoder[LoginResponse] = deriveDecoder[LoginResponse]
 }

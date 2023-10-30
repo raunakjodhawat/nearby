@@ -1,8 +1,10 @@
 package com.raunakjodhawat.nearby.controllers
 
+import com.raunakjodhawat.nearby.models.user.LoginResponse
 import com.raunakjodhawat.nearby.repository.user.UserRepository
 import com.raunakjodhawat.nearby.models.user.JsonEncoderDecoder.*
-import com.raunakjodhawat.nearby.models.user.{LoginUser, User}
+import com.raunakjodhawat.nearby.models.user.{LoginUser, User, UsersTable}
+import com.raunakjodhawat.nearby.utils.Utils.verifyPassword
 import io.circe.*
 import io.circe.syntax.*
 import io.circe.parser.decode
@@ -10,6 +12,8 @@ import org.slf4j.{Logger, LoggerFactory}
 import slick.jdbc.PostgresProfile.api.*
 import zio.*
 import zio.http.*
+
+import java.util.Base64
 
 class UserController(userRepository: UserRepository) {
   val log: Logger = LoggerFactory.getLogger(classOf[UserController])
@@ -35,7 +39,24 @@ class UserController(userRepository: UserRepository) {
     result <- resultZIO
   } yield Response.json(result.asJson.toString())
 
-  // Used for signup requests
+  def loginUser(body: Body): ZIO[Database, Throwable, Response] = {
+    body.asString
+      .map(decode[LoginUser])
+      .flatMap {
+        case Left(e) => ZIO.fail(new Exception(e))
+        case Right(incomingLoginUser) =>
+          for {
+            user <- userRepository
+              .getOrCreateUser(incomingLoginUser.toUser)
+            authToken <- createAuthToken(
+              incomingLoginUser.username,
+              incomingLoginUser.password,
+              user.secret,
+              user.password
+            )
+          } yield Response.json(authToken.asJson.toString())
+      }
+  }
   def createUser(body: Body): ZIO[Database, Throwable, Response] = {
     body.asString
       .map(decode[LoginUser])
@@ -77,5 +98,20 @@ class UserController(userRepository: UserRepository) {
           } yield Response.json(user.asJson.toString())
         }
       }
+  }
+
+  private def createAuthToken(
+    username: String,
+    password: String,
+    secret: String,
+    hashedPassword: String
+  ): ZIO[Any, Throwable, LoginResponse] = {
+    if (verifyPassword(password, secret, hashedPassword)) {
+      val token = s"$username:$hashedPassword"
+      val encodedToken = Base64.getEncoder.encodeToString(token.getBytes())
+      ZIO.succeed(LoginResponse(s"Basic $encodedToken"))
+    } else {
+      ZIO.fail(new Exception("Invalid Password"))
+    }
   }
 }

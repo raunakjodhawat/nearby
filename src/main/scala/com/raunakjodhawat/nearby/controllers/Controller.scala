@@ -26,8 +26,10 @@ object Controller {
           uc.getAllUsers
         case req @ Method.POST -> base_path / "user" =>
           uc.createUser(req.body)
+        case req @ Method.POST -> base_path / "authenticate" =>
+          ac.authenticateUser(Utils.decodeAuthorizationHeader(req.headers))
         case req @ Method.POST -> base_path / "login" =>
-          ac.loginUser(Utils.decodeAuthorizationHeader(req.headers))
+          uc.loginUser(req.body)
         case Method.GET -> base_path / "ping" =>
           ZIO.succeed(Response.text("pong"))
       }
