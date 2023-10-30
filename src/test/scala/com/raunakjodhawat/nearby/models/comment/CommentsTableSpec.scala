@@ -1,6 +1,7 @@
 package com.raunakjodhawat.nearby.models.comment
 
-import com.raunakjodhawat.nearby.clearDB
+import com.raunakjodhawat.nearby.test_dbZIO
+import com.raunakjodhawat.nearby.databaseConfiguration.{friendships, groups, likes}
 import com.raunakjodhawat.nearby.models.post.{Post, PostsTable}
 import com.raunakjodhawat.nearby.models.user.{User, UsersTable}
 import org.junit.runner.RunWith
@@ -32,11 +33,23 @@ class CommentsTableSpec extends JUnitRunnableSpec {
     val user: User = User(id = 1L, username = "raunak", password = "sha-256", secret = "raunakjodhawat@gmail.com")
     val post: Post = Post(id = 1L, user_id = 1L, title = "My First Post", content = Some("Some image url"))
     for {
-      db <- clearDB()
+      db <- test_dbZIO
       dbCreationFuture <- ZIO.fromFuture { ex =>
         {
           db.run(
             DBIO.seq(
+              comments.schema.dropIfExists,
+              likes.schema.dropIfExists,
+              friendships.schema.dropIfExists,
+              groups.schema.dropIfExists,
+              posts.schema.dropIfExists,
+              users.schema.dropIfExists,
+              users.schema.create,
+              posts.schema.create,
+              comments.schema.create,
+              likes.schema.create,
+              friendships.schema.create,
+              groups.schema.create,
               users += user,
               posts += post
             )
@@ -44,9 +57,10 @@ class CommentsTableSpec extends JUnitRunnableSpec {
         }
       }.fork
       _ <- dbCreationFuture.join
-      allComments <- ZIO.fromFuture { ex => db.run(comments.result) }
-      _ <- ZIO.from(db.close())
-    } yield allComments
+      allComments <- ZIO.fromFuture { ex => db.run(comments.result) }.fork
+      response <- allComments.join
+      _ <- ZIO.attemptBlocking(db.close())
+    } yield response
   }
 
   def spec = suite("Comments Table")(
@@ -83,7 +97,7 @@ class CommentsTableSpec extends JUnitRunnableSpec {
         }.fork
         _ <- addingComments.join
         allComments <- ZIO.fromFuture { ex => db.run(comments.result) }
-        _ <- ZIO.from(db.close())
+        _ <- ZIO.attemptBlocking(db.close())
       } yield allComments
 
       assertZIO(commentsZIO)(Assertion.hasSize(equalTo(2)))

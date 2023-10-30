@@ -34,7 +34,7 @@ object AuthorizationControllerSpec {
     uuid <- Random.nextUUID
     _ <- TestRandom.feedUUIDs(uuid)
     user <- userRepository.createUser(loginUser.toUser)
-    _ <- ZIO.from(db.close())
+    _ <- ZIO.attemptBlocking(db.close())
   } yield user
 }
 @RunWith(classOf[ZTestJUnitRunner])
@@ -63,7 +63,6 @@ class AuthorizationControllerSpec extends JUnitRunnableSpec {
         customAssertZIO(zio)
       },
       test("Authorization succeeds, when username and password are both correct") {
-//        val incomingHeader = Headers(("Authorization", "Basic dXNlcm5hbWU6cGFzc3dvcmQK"))
         for {
           _ <- clearDB()
           user <- createAUser()
