@@ -14,11 +14,9 @@ object JsonEncoderDecoder {
   implicit val encodeUserLocation: Encoder[UserLocation] = deriveEncoder[UserLocation]
   implicit val decodeUserLocation: Decoder[UserLocation] = deriveDecoder[UserLocation]
 
-  implicit val userStatusEncoder: Encoder[UserStatus] =
-    Encoder.instance(user_status => Json.fromString(user_status.name))
-  implicit val userStatusDecoder: Decoder[UserStatus] =
-    Decoder.decodeString.map(user_status => UserStatus.valueOf(user_status))
-
   implicit val userEncoder: Encoder[User] = deriveEncoder[User]
   implicit val userDecoder: Decoder[User] = deriveDecoder[User]
+
+  implicit val loginUserEncoder: Encoder[LoginUser] = deriveEncoder[LoginUser]
+  implicit val loginUserDecoder: Decoder[LoginUser] = deriveDecoder[LoginUser]
 }

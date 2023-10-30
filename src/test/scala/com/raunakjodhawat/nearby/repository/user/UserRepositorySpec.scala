@@ -1,8 +1,17 @@
 package com.raunakjodhawat.nearby.repository.user
 
-import com.raunakjodhawat.nearby.{clearDB, testUser, test_date, test_dbZIO}
-import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation, UserStatus}
+import com.raunakjodhawat.nearby.{
+  customAssertZIO,
+  testUser,
+  test_comments,
+  test_date,
+  test_dbZIO,
+  test_posts,
+  test_users
+}
+import com.raunakjodhawat.nearby.models.user.{Avatar, User, UserLocation}
 import org.junit.runner.RunWith
+import slick.jdbc
 import slick.jdbc.PostgresProfile.api.*
 import zio.*
 import zio.test.*
@@ -13,6 +22,27 @@ object UserRepositorySpec {
   val userRepository = new UserRepository(test_dbZIO)
   val users = UserRepository.users
 
+  def clearDB(): ZIO[Any, Throwable, jdbc.PostgresProfile.backend.JdbcDatabaseDef] = {
+    for {
+      db <- test_dbZIO
+      dbCreationFuture <- ZIO.fromFuture { ex =>
+        {
+          db.run(
+            DBIO.seq(
+              test_comments.schema.dropIfExists,
+              test_posts.schema.dropIfExists,
+              test_users.schema.dropIfExists,
+              test_users.schema.create,
+              test_posts.schema.create,
+              test_comments.schema.create
+            )
+          )
+        }
+      }.fork
+      _ <- dbCreationFuture.join
+      _ <- ZIO.from(db.close())
+    } yield db
+  }
   def createAndGetAUser(): ZIO[Database, Throwable, User] = {
     val user = testUser()
     for {
@@ -25,7 +55,7 @@ object UserRepositorySpec {
       _ <- ZIO.from(db.close())
     } yield {
       findUserZIO.copy(
-        secret = Some("00000000-075b-4d15-8000-00003ade68b1"),
+        secret = "00000000-075b-4d15-8000-00003ade68b1",
         created_at = Some(test_date),
         updated_at = Some(test_date)
       )
@@ -57,7 +87,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
     assertZIO(createAndGetAUser())(
       Assertion.equalTo(
         testUser().copy(
-          secret = Some("00000000-075b-4d15-8000-00003ade68b1")
+          secret = "00000000-075b-4d15-8000-00003ade68b1"
         )
       )
     )
@@ -90,11 +120,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
           updateUser <- userRepository.updateUser(testUser(), 1L)
           _ <- ZIO.from(db.close())
         } yield updateUser
-      val assertionZIO = zio.fold(
-        _ => ZIO.unit,
-        _ => ZIO.fail("Assertion failed")
-      )
-      assertZIO(assertionZIO)(equalTo(ZIO.unit))
+      customAssertZIO(zio)
     },
     test("should be able to create, get and update a user") {
       for {
@@ -108,7 +134,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
           Assertion.equalTo(
             oldUser.copy(
               phone = Some("89837"),
-              secret = Some("00000000-075b-4d15-8000-00003ade68b1"),
+              secret = "00000000-075b-4d15-8000-00003ade68b1",
               created_at = newUser.created_at,
               updated_at = newUser.updated_at
             )

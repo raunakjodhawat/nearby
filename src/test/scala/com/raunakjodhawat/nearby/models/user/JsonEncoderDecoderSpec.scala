@@ -73,20 +73,6 @@ class JsonEncoderDecoderSpec extends JUnitRunnableSpec {
         assert(Avatar.AV_5.asJson.as[Avatar])(Assertion.equalTo(Right(Avatar.AV_5)))
       }
     ),
-    suite("user status")(
-      test("encoding") {
-        assert(UserStatus.ACTIVE.toString.asJson)(Assertion.equalTo(Json.fromString("ACTIVE")))
-        assert(UserStatus.INACTIVE.toString.asJson)(Assertion.equalTo(Json.fromString("INACTIVE")))
-        assert(UserStatus.PENDING_ACTIVATION.toString.asJson)(Assertion.equalTo(Json.fromString("PENDING_ACTIVATION")))
-      },
-      test("decoding") {
-        assert(UserStatus.ACTIVE.asJson.as[UserStatus])(Assertion.equalTo(Right(UserStatus.ACTIVE)))
-        assert(UserStatus.INACTIVE.asJson.as[UserStatus])(Assertion.equalTo(Right(UserStatus.INACTIVE)))
-        assert(UserStatus.PENDING_ACTIVATION.asJson.as[UserStatus])(
-          Assertion.equalTo(Right(UserStatus.PENDING_ACTIVATION))
-        )
-      }
-    ),
     suite("user")(
       test("encoding") {
         parse(test_user_json_string).map(x => assert(test_user_json)(Assertion.equalTo(x)))

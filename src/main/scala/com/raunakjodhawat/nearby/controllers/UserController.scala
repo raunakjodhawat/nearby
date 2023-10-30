@@ -1,17 +1,18 @@
 package com.raunakjodhawat.nearby.controllers
 
 import com.raunakjodhawat.nearby.repository.user.UserRepository
-import com.raunakjodhawat.nearby.utils.Utils.sendEmail
-import com.raunakjodhawat.nearby.models.user.JsonEncoderDecoder._
-import com.raunakjodhawat.nearby.models.user.User
-import io.circe._
-import io.circe.syntax._
+import com.raunakjodhawat.nearby.models.user.JsonEncoderDecoder.*
+import com.raunakjodhawat.nearby.models.user.{LoginUser, User}
+import io.circe.*
+import io.circe.syntax.*
 import io.circe.parser.decode
-import slick.jdbc.PostgresProfile.api._
-import zio._
-import zio.http._
+import org.slf4j.{Logger, LoggerFactory}
+import slick.jdbc.PostgresProfile.api.*
+import zio.*
+import zio.http.*
 
 class UserController(userRepository: UserRepository) {
+  val log: Logger = LoggerFactory.getLogger(classOf[UserController])
   def getAllUsers: ZIO[Database, Throwable, Response] = for {
     resultZIO <- for {
       fib <- userRepository.getAllUsers.fork
@@ -37,23 +38,22 @@ class UserController(userRepository: UserRepository) {
   // Used for signup requests
   def createUser(body: Body): ZIO[Database, Throwable, Response] = {
     body.asString
-      .map(decode[User])
+      .map(decode[LoginUser])
       .flatMap {
         case Left(e) => ZIO.fail(new Exception(e))
-        case Right(user) =>
+        case Right(loginUser) =>
           for {
             resultZIO <- for {
               fib <- userRepository
-                .createUser(user)
+                .createUser(loginUser.toUser)
                 .fork
               res <- fib.await
             } yield res match {
               case Exit.Success(v)     => ZIO.succeed(v)
               case Exit.Failure(cause) => ZIO.failCause(cause)
             }
-            user <- resultZIO
-            _ <- sendEmail(user.secret.get, user.id, user.username, user.email).fork
-          } yield Response.json(user.asJson.toString())
+            _ <- resultZIO
+          } yield Response.status(Status.Created)
       }
   }
 

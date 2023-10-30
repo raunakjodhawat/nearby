@@ -1,11 +1,11 @@
 package com.raunakjodhawat.nearby.controllers
 
 import com.raunakjodhawat.nearby.repository.user.UserRepository
-
-import slick.jdbc.PostgresProfile.api._
-
-import zio._
-import zio.http._
+import com.raunakjodhawat.nearby.utils.Utils
+import slick.jdbc.PostgresProfile.api.*
+import zio.*
+import zio.http.*
+import zio.http.Headers
 
 object Controller {
   def apply(db: ZIO[Any, Throwable, Database]): HttpApp[Database, Response] = {
@@ -13,6 +13,7 @@ object Controller {
     val userRepository = new UserRepository(db)
     val vc = new VerificationController(userRepository)
     val uc = new UserController(userRepository)
+    val ac = new AuthorizationController(userRepository)
     Http
       .collectZIO[Request] {
         case Method.GET -> base_path / "verify" / long(id) / secret_key =>
@@ -25,9 +26,17 @@ object Controller {
           uc.getAllUsers
         case req @ Method.POST -> base_path / "user" =>
           uc.createUser(req.body)
+        case req @ Method.POST -> base_path / "login" =>
+          ac.loginUser(Utils.decodeAuthorizationHeader(req.headers))
         case Method.GET -> base_path / "ping" =>
           ZIO.succeed(Response.text("pong"))
       }
-      .mapError(err => Response.fromHttpError(HttpError.BadRequest.apply(err.getMessage)))
+      .mapError(err =>
+        Response(
+          status = Status.BadRequest,
+          headers = Headers(("Content-Type", "application/json")),
+          body = Body.fromString(s"""${err.getMessage}""")
+        )
+      )
   }
 }

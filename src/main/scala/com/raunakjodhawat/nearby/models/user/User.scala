@@ -1,12 +1,9 @@
 package com.raunakjodhawat.nearby.models.user
 
-import java.util.Date
+import com.raunakjodhawat.nearby.utils.Utils
+import com.raunakjodhawat.nearby.utils.Utils.{generateSalt, hashPassword}
 
-enum UserStatus(val name: String) {
-  case PENDING_ACTIVATION extends UserStatus("PENDING_ACTIVATION")
-  case ACTIVE extends UserStatus("ACTIVE")
-  case INACTIVE extends UserStatus("INACTIVE")
-}
+import java.util.Date
 enum Avatar(val name: String) {
   case AV_1 extends Avatar("AV_1")
   case AV_2 extends Avatar("AV_2")
@@ -18,17 +15,31 @@ enum Avatar(val name: String) {
 case class UserLocation(lat: Double, long: Double)
 
 case class User(
-  id: Long,
+  id: Long = 0,
   username: String,
   password: String,
-  secret: Option[String] = None,
-  email: String,
+  secret: String,
+  email: Option[String] = None,
   name: Option[String] = None,
   bio: Option[String] = None,
   phone: Option[String] = None,
   location: Option[UserLocation] = None,
   created_at: Option[Date] = Some(new Date()),
   updated_at: Option[Date] = Some(new Date()),
-  user_status: Option[UserStatus] = Some(UserStatus.PENDING_ACTIVATION),
+  activationComplete: Boolean = false,
   avatar: Option[Avatar] = Some(Avatar.AV_1)
 )
+
+case class LoginUser(
+  username: String,
+  password: String
+) {
+  def toUser: User = {
+    val salt = generateSalt
+    User(
+      username = username,
+      password = hashPassword(password, salt),
+      secret = salt
+    )
+  }
+}

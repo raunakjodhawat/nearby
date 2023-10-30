@@ -1,19 +1,25 @@
 package com.raunakjodhawat.nearby.repository.user
 
-import com.raunakjodhawat.nearby.models.user.{User, UserStatus, UsersTable}
-import com.raunakjodhawat.nearby.utils.Utils.secretKey
-
-import slick.jdbc.PostgresProfile.api._
+import com.raunakjodhawat.nearby.models.user.{User, UsersTable}
+import com.raunakjodhawat.nearby.utils.Utils.{generateSalt, secretKey}
+import org.slf4j.{Logger, LoggerFactory}
+import slick.jdbc.PostgresProfile.api.*
 
 import java.util.Date
-
-import zio._
+import zio.*
 
 object UserRepository {
   val users: TableQuery[UsersTable] = TableQuery[UsersTable]
 }
 class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
   import UserRepository._
+
+  val log: Logger = LoggerFactory.getLogger(classOf[UserRepository])
+  def getUserByUsername(username: String): ZIO[Database, Throwable, Option[UsersTable#TableElementType]] = for {
+    db <- dbZIO
+    user <- ZIO.fromFuture { ex => db.run(users.filter(_.username === username).result.headOption) }
+    _ <- ZIO.from(db.close())
+  } yield user
   def getAllUsers: ZIO[Database, Throwable, Seq[UsersTable#TableElementType]] = for {
     db <- dbZIO
     getAllUsersFutureZIO <- ZIO.fromFuture { ex => db.run(users.result) }
@@ -29,23 +35,19 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     case None       => ZIO.fail(new Exception("unable to find the user"))
   }
 
-  def createUser(user: User): ZIO[Database, Throwable, UsersTable#TableElementType] =
+  def createUser(user: User): ZIO[Database, Throwable, Unit] =
     for {
       db <- dbZIO
-      secret <- secretKey
       updatedUserFutureZIO <- ZIO.fromFuture { ex =>
         db.run(
-          users += user.copy(secret = Some(secret.toString),
-                             created_at = Some(new Date()),
-                             updated_at = Some(new Date())
-          )
+          users += user.copy(created_at = Some(new Date()), updated_at = Some(new Date()))
         )
       }
-      updationResults <-
-        if (updatedUserFutureZIO == 1) ZIO.fromFuture { ex => db.run(users.filter(_.email === user.email).result.head) }
-        else ZIO.fail(new Exception("Error creating user"))
       _ <- ZIO.from(db.close())
-    } yield updationResults
+    } yield {
+      if (updatedUserFutureZIO == 1) ZIO.succeed(())
+      else ZIO.fail(new Exception("Error creating user"))
+    }
 
   def verifyUser(id: Long, newSecret: String): ZIO[Database, Throwable, String] = for {
     db <- dbZIO
@@ -54,7 +56,7 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     }
     copyResultCount <- getUserFromFromDB match {
       case Some(user) => {
-        val userCopy = user.copy(secret = None, updated_at = Some(new Date()), user_status = Some(UserStatus.ACTIVE))
+        val userCopy = user.copy(updated_at = Some(new Date()), activationComplete = true)
         ZIO.fromFuture { ex =>
           db.run(users.filter(_.id === id).update(userCopy))
         }
@@ -78,12 +80,12 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
       userFromDB <- getUserById(id)
       userCopy = incomingUser.copy(
         id = id,
-        secret = modifyIfIncomingValueExists(incomingUser.secret, userFromDB.secret),
+        secret = incomingUser.secret,
         phone = modifyIfIncomingValueExists(incomingUser.phone, userFromDB.phone),
         location = modifyIfIncomingValueExists(incomingUser.location, userFromDB.location),
         created_at = userFromDB.created_at,
         updated_at = Some(new Date()),
-        user_status = modifyIfIncomingValueExists(incomingUser.user_status, userFromDB.user_status),
+        activationComplete = incomingUser.activationComplete,
         avatar = modifyIfIncomingValueExists(incomingUser.avatar, userFromDB.avatar)
       )
       updateResultCount <- ZIO.fromFuture { ex => db.run(users.filter(_.id === id).update(userCopy)) }
