@@ -6,6 +6,9 @@ import com.raunakjodhawat.nearby.{
   test_comments,
   test_date,
   test_dbZIO,
+  test_friendships,
+  test_groups,
+  test_likes,
   test_posts,
   test_users
 }
@@ -29,18 +32,24 @@ object UserRepositorySpec {
         {
           db.run(
             DBIO.seq(
+              test_groups.schema.dropIfExists,
+              test_friendships.schema.dropIfExists,
               test_comments.schema.dropIfExists,
+              test_likes.schema.dropIfExists,
               test_posts.schema.dropIfExists,
               test_users.schema.dropIfExists,
               test_users.schema.create,
               test_posts.schema.create,
-              test_comments.schema.create
+              test_comments.schema.create,
+              test_likes.schema.create,
+              test_friendships.schema.create,
+              test_groups.schema.create
             )
           )
         }
       }.fork
       _ <- dbCreationFuture.join
-      _ <- ZIO.from(db.close())
+      _ <- ZIO.attemptBlocking(db.close())
     } yield db
   }
   def createAndGetAUser(): ZIO[Database, Throwable, User] = {
@@ -52,7 +61,7 @@ object UserRepositorySpec {
       _ <- TestRandom.feedUUIDs(uuid)
       _ <- userRepository.createUser(user)
       findUserZIO <- userRepository.getUserById(user.id)
-      _ <- ZIO.from(db.close())
+      _ <- ZIO.attemptBlocking(db.close())
     } yield {
       findUserZIO.copy(
         secret = "00000000-075b-4d15-8000-00003ade68b1",
@@ -88,7 +97,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
         for {
           db <- clearDB()
           getUserResult <- userRepository.getUserById(1L)
-          _ <- ZIO.from(db.close())
+          _ <- ZIO.attemptBlocking(db.close())
         } yield getUserResult
 
       val assertionZIO = zio.fold(
@@ -106,7 +115,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
         for {
           db <- clearDB()
           updateUser <- userRepository.updateUser(testUser(), 1L)
-          _ <- ZIO.from(db.close())
+          _ <- ZIO.attemptBlocking(db.close())
         } yield updateUser
       customAssertZIO(zio)
     },
@@ -116,7 +125,7 @@ class UserRepositorySpec extends JUnitRunnableSpec {
         oldUser <- createAndGetAUser()
         _ <- userRepository.updateUser(oldUser.copy(phone = Some("89837")), 1L)
         newUser <- userRepository.getUserById(1L)
-        _ <- ZIO.from(db.close())
+        _ <- ZIO.attemptBlocking(db.close())
       } yield {
         zio.test.assert(newUser)(
           Assertion.equalTo(

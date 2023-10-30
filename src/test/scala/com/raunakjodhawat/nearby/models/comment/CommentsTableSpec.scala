@@ -1,10 +1,9 @@
 package com.raunakjodhawat.nearby.models.comment
 
-import com.raunakjodhawat.nearby.clearDB
+import com.raunakjodhawat.nearby.{clearDB, test_dbZIO}
 import com.raunakjodhawat.nearby.models.post.{Post, PostsTable}
 import com.raunakjodhawat.nearby.models.user.{User, UsersTable}
 import org.junit.runner.RunWith
-import slick.ast.TypedType
 import slick.jdbc.PostgresProfile.api.*
 import slick.dbio.DBIO
 import zio.*
@@ -16,7 +15,6 @@ import java.util.Date
 import scala.util.Properties
 
 object CommentsTableSpec {
-  val dbZIO = ZIO.attempt(Database.forConfig(Properties.envOrElse("DBPATH", "postgres-test-local")))
   val comments = TableQuery[CommentsTable]
   val users = TableQuery[UsersTable]
   val posts = TableQuery[PostsTable]
@@ -44,9 +42,10 @@ class CommentsTableSpec extends JUnitRunnableSpec {
         }
       }.fork
       _ <- dbCreationFuture.join
-      allComments <- ZIO.fromFuture { ex => db.run(comments.result) }
-      _ <- ZIO.from(db.close())
-    } yield allComments
+      allComments <- ZIO.fromFuture { ex => db.run(comments.result) }.fork
+      response <- allComments.join
+      _ <- ZIO.attemptBlocking(db.close())
+    } yield response
   }
 
   def spec = suite("Comments Table")(
@@ -71,8 +70,8 @@ class CommentsTableSpec extends JUnitRunnableSpec {
                                               updated_at = Some(date)
       )
       val commentsZIO = for {
+        db <- test_dbZIO
         _ <- clearAndCreateCommentsTableZIO
-        db <- dbZIO
         addingComments <- ZIO.fromFuture { ex =>
           db.run(
             DBIO.seq(
@@ -88,5 +87,5 @@ class CommentsTableSpec extends JUnitRunnableSpec {
 
       assertZIO(commentsZIO)(Assertion.hasSize(equalTo(2)))
     }
-  ).provide(ZLayer.fromZIO(dbZIO)) @@ TestAspect.sequential
+  ).provide(ZLayer.fromZIO(test_dbZIO)) @@ TestAspect.sequential
 }
