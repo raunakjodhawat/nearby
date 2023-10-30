@@ -54,5 +54,6 @@ object Application extends ZIOAppDefault {
   import databaseConfiguration._
 
   private val app: HttpApp[Database, Response] = Controller(dbZIO)
-  override def run = initializeDB *> Server.serve(app).provide(Server.default, ZLayer.fromZIO(dbZIO))
+  override def run: ZIO[Any, Throwable, Nothing] =
+    initializeDB *> Server.serve(app).provide(Server.default, ZLayer.fromZIO(dbZIO))
 }

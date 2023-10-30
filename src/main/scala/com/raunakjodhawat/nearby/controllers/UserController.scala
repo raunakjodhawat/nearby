@@ -17,17 +17,6 @@ import java.util.Base64
 
 class UserController(userRepository: UserRepository) {
   val log: Logger = LoggerFactory.getLogger(classOf[UserController])
-  def getAllUsers: ZIO[Database, Throwable, Response] = for {
-    resultZIO <- for {
-      fib <- userRepository.getAllUsers.fork
-      res <- fib.await
-    } yield res match {
-      case Exit.Success(v)     => ZIO.succeed(v)
-      case Exit.Failure(cause) => ZIO.failCause(cause)
-    }
-    result <- resultZIO
-  } yield if (result.isEmpty) Response.status(Status.NoContent) else Response.json(result.asJson.toString())
-
   def getUserById(id: Long): ZIO[Database, Throwable, Response] = for {
     resultZIO <- for {
       fib <- userRepository.getUserById(id).fork
@@ -57,27 +46,6 @@ class UserController(userRepository: UserRepository) {
           } yield Response.json(authToken.asJson.toString())
       }
   }
-  def createUser(body: Body): ZIO[Database, Throwable, Response] = {
-    body.asString
-      .map(decode[LoginUser])
-      .flatMap {
-        case Left(e) => ZIO.fail(new Exception(e))
-        case Right(loginUser) =>
-          for {
-            resultZIO <- for {
-              fib <- userRepository
-                .createUser(loginUser.toUser)
-                .fork
-              res <- fib.await
-            } yield res match {
-              case Exit.Success(v)     => ZIO.succeed(v)
-              case Exit.Failure(cause) => ZIO.failCause(cause)
-            }
-            _ <- resultZIO
-          } yield Response.status(Status.Created)
-      }
-  }
-
   def updateUser(body: Body, id: Long): ZIO[Database, Throwable, Response] = {
     body.asString
       .map(decode[User])

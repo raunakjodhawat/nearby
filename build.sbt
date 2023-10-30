@@ -1,7 +1,7 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.3.1"
-ThisBuild / envFileName := ".env.test"
+
 lazy val root = (project in file("."))
   .settings(
     name := "nearby"
@@ -17,8 +17,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick" % slickVersion,
   "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
   "org.postgresql" % "postgresql" % "42.5.4",
-  // email
-  "com.github.daddykotex" %% "courier" % "3.2.0",
   // jwt token
   "com.github.jwt-scala" %% "jwt-zio-json" % "9.4.0",
   // zio test

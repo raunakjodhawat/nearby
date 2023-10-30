@@ -9,7 +9,7 @@ import zio.http.*
 
 class AuthorizationController(userRepository: UserRepository) {
   private val log: Logger = LoggerFactory.getLogger(classOf[AuthorizationController])
-  def authenticateUser(headersZIO: ZIO[Any, Throwable, (String, String)]): ZIO[Database, Throwable, Response] = {
+  def authenticateRequest(headersZIO: ZIO[Any, Throwable, (String, String)]): ZIO[Database, Throwable, Response] = {
     headersZIO.flatMap { headers =>
       val (username, hashedPassword) = headers
       for {
@@ -17,18 +17,16 @@ class AuthorizationController(userRepository: UserRepository) {
         response <- mayBeUser match {
           case Some(user) =>
             if (hashedPassword == user.password) {
-              ZIO.succeed(Response.json(s"Welcome, ${user.username}"))
+              ZIO.succeed(Response.ok)
             } else {
               log.error(s"Invalid credentials, for ${user.toString}")
               ZIO.fail(new RuntimeException("Invalid credentials"))
             }
-          case None => {
+          case None =>
             log.error(s"User not found, for $username")
             ZIO.fail(new RuntimeException("User not found"))
-          }
         }
       } yield response
     }
   }
-
 }

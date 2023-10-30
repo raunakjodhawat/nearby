@@ -67,22 +67,10 @@ class UserRepositorySpec extends JUnitRunnableSpec {
   import UserRepositorySpec._
 
   def spec = suite("user repository spec")(
-    getAllUsersSuite,
     createUserSuite,
     getUserByIdSuite,
     updateUserSuite
   ).provide(ZLayer.fromZIO(test_dbZIO)) @@ TestAspect.sequential @@ TestAspect.timed
-
-  def getAllUsersSuite = suite("Get All Users Spec")(
-    test("return an empty array, when db is empty") {
-      val zio = for {
-        _ <- clearDB()
-        getAllUserResults <- userRepository.getAllUsers
-      } yield getAllUserResults
-      assertZIO(zio)(Assertion.hasSize(Assertion.equalTo(0)))
-    }
-  )
-
   def createAndGetAUserTest = test("successfully creates a new user, puts it into the database, and retrieves it") {
     assertZIO(createAndGetAUser())(
       Assertion.equalTo(

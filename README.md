@@ -8,16 +8,12 @@ It enables you to connect with people near you, get there services, see relevant
 1. Clone the repository
 2. Install [Postgres](https://www.postgresql.org) and create a database named `nearby` with a user named `nearby` with password `nearby`
 3. Run postgres on your machine
-4. Create `env.development` file in the root directory of the project and add the following environment variables
-```text
-env=development
-mailerHost=smtp.mailgun.org (if you are using mailgun)
-mailerUsername= (username of your mailgun account)
-mailerPassword= (password of your mailgun account)
+4. Execute 
+```shell
+   sbt run
 ```
-5. Run `source env.development` followed with `sbt run` in the root directory of the project
-6. install insomnia or postman and test the [endpoints](./Insomnia.json)
-7. Enjoy!
+5. install insomnia or postman and test the [endpoints](./Insomnia.json)
+6. Enjoy!
 
 ## Running test
 ### With DB on Docker 
@@ -43,17 +39,18 @@ mailerPassword= (password of your mailgun account)
 9. [Cats Effect](https://typelevel.org/cats-effect/) - The most popular purely functional effect library for Scala
 
 ## Endpoints
-| Method | Endpoint       | Description |
-| -- |----------------| --- |
-| GET | api/v1/user    | Get all users |
-| GET | api/v1/user/:id | Get a user by id |
-| POST | api/v1/user    | Create a user |
-| POST | api/v1/user/:id     | Update a user |
+| Method | Endpoint            | Description              |
+|--------|---------------------|--------------------------|
+| GET    | api/v1/user/:id     | Get a user by id         |
+| POST   | api/v1/user/:id     | Update a user            |
+| POST   | api/v1/authenticate | Authenticate Auth header |
+| POST   | api/v1/login        | Login a user             |
+| GET    | api/v1/ping         | Health check URL         |
 
 
 ## Functionality
-1. Sign up: Users can create a new account with a username and password. Username and Email address both needs to be unique. Upon successful user creation, an email is sent with a verification link. User needs to verify the email address before logging in.
-
+1. User can login. During login, if it's a new user we create the account with the given username and password.
+2. All subsequent request needs auth token to validate themselves
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
@@ -63,4 +60,4 @@ mailerPassword= (password of your mailgun account)
 
 ## Contribution
 Feel free to contribute to the project by creating a pull request.
-I am looking for some React developers to help me with the frontend of the project.
+I am looking for some React developers to help me with the [frontend](https://github.com/raunakjodhawat/nearby-frontend) of the project.

@@ -49,7 +49,7 @@ class AuthorizationControllerSpec extends JUnitRunnableSpec {
         val zio = for {
           _ <- clearDB()
           header = decodeAuthorizationHeader(incomingHeader)
-          result <- ac.authenticateUser(header)
+          result <- ac.authenticateRequest(header)
         } yield result
         customAssertZIO(zio)
       },
@@ -59,7 +59,7 @@ class AuthorizationControllerSpec extends JUnitRunnableSpec {
           _ <- clearDB()
           _ <- createAUser()
           header = decodeAuthorizationHeader(incomingHeader)
-          result <- ac.authenticateUser(header)
+          result <- ac.authenticateRequest(header)
         } yield result
         customAssertZIO(zio)
       },
@@ -69,7 +69,7 @@ class AuthorizationControllerSpec extends JUnitRunnableSpec {
           _ <- clearDB()
           _ <- createAUser()
           header = decodeAuthorizationHeader(incomingHeader)
-          result <- ac.authenticateUser(header)
+          result <- ac.authenticateRequest(header)
         } yield {
           assert(result.status.code)(equalTo(200))
         }

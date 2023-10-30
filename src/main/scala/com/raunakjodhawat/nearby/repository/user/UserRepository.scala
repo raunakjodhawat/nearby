@@ -1,7 +1,6 @@
 package com.raunakjodhawat.nearby.repository.user
 
 import com.raunakjodhawat.nearby.models.user.{User, UsersTable}
-import com.raunakjodhawat.nearby.utils.Utils.{generateSalt, secretKey}
 import org.slf4j.{Logger, LoggerFactory}
 import slick.jdbc.PostgresProfile.api.*
 
@@ -20,12 +19,6 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
     user <- ZIO.fromFuture { ex => db.run(users.filter(_.username === username).result.headOption) }
     _ <- ZIO.from(db.close())
   } yield user
-  def getAllUsers: ZIO[Database, Throwable, Seq[UsersTable#TableElementType]] = for {
-    db <- dbZIO
-    getAllUsersFutureZIO <- ZIO.fromFuture { ex => db.run(users.result) }
-    _ <- ZIO.from(db.close())
-  } yield getAllUsersFutureZIO
-
   def getUserById(id: Long): ZIO[Database, Throwable, UsersTable#TableElementType] = (for {
     db <- dbZIO
     getUserByIdFutureZIO <- ZIO.fromFuture { ex => db.run(users.filter(x => x.id === id).result.headOption) }
@@ -57,26 +50,6 @@ class UserRepository(dbZIO: ZIO[Any, Throwable, Database]) {
         else ZIO.fail(new Exception("Error creating user"))
       _ <- ZIO.from(db.close())
     } yield user
-
-  def verifyUser(id: Long, newSecret: String): ZIO[Database, Throwable, String] = for {
-    db <- dbZIO
-    getUserFromFromDB <- ZIO.fromFuture { ex =>
-      db.run(users.filter(x => x.id === id && x.secret === newSecret).result.headOption)
-    }
-    copyResultCount <- getUserFromFromDB match {
-      case Some(user) => {
-        val userCopy = user.copy(updated_at = Some(new Date()), activationComplete = true)
-        ZIO.fromFuture { ex =>
-          db.run(users.filter(_.id === id).update(userCopy))
-        }
-      }
-      case None => ZIO.succeed(0)
-    }
-    copyResult <-
-      if (copyResultCount == 1) ZIO.succeed("User update Success")
-      else ZIO.fail(new Exception("failed to verifyUser the user"))
-    _ <- ZIO.from(db.close())
-  } yield copyResult
 
   // if incoming user object has a property, use that otherwise use the one from the database
   private def modifyIfIncomingValueExists[T](newValue: Option[T], dbValue: Option[T]): Option[T] = newValue match {
